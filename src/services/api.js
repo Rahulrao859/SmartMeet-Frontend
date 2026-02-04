@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Configure base URL for API
-const API_BASE_URL = 'http://localhost:5000/api';
+// Configure base URL for API from environment variables
+// Falls back to localhost if not set
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -91,7 +92,8 @@ export const handleApiError = (error) => {
         return error.response.data.error || 'Server error occurred';
     } else if (error.request) {
         // Request made but no response
-        return 'Cannot connect to server. Please ensure the backend is running on http://localhost:5000';
+        const backendUrl = API_BASE_URL.replace('/api', '');
+        return `Cannot connect to server. Please ensure the backend is running on ${backendUrl}`;
     } else {
         // Something else happened
         return error.message || 'An unexpected error occurred';
