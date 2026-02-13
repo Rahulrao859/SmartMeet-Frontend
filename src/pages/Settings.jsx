@@ -1,10 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdPerson, MdNotifications, MdSecurity, MdIntegrationInstructions, MdSave, MdPalette, MdDarkMode, MdLightMode } from 'react-icons/md';
 import { useTheme } from '../context/ThemeContext';
 
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const { theme, setTheme, toggleTheme } = useTheme();
+    const [userData, setUserData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        fullName: ''
+    });
+
+    // Load user data from localStorage
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser);
+                // Extract first and last name from full name
+                const nameParts = user.name ? user.name.split(' ') : ['', ''];
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.slice(1).join(' ') || '';
+
+                setUserData({
+                    firstName,
+                    lastName,
+                    email: user.email || '',
+                    fullName: user.name || ''
+                });
+            } catch (error) {
+                console.error('Error parsing user data:', error);
+            }
+        }
+    }, []);
+
+    // Generate initials from user name
+    const getInitials = () => {
+        if (userData.firstName && userData.lastName) {
+            return `${userData.firstName.charAt(0)}${userData.lastName.charAt(0)}`.toUpperCase();
+        } else if (userData.fullName) {
+            const parts = userData.fullName.split(' ');
+            if (parts.length >= 2) {
+                return `${parts[0].charAt(0)}${parts[parts.length - 1].charAt(0)}`.toUpperCase();
+            }
+            return userData.fullName.charAt(0).toUpperCase();
+        }
+        return 'U';
+    };
 
     const tabs = [
         { id: 'profile', label: 'Profile', icon: MdPerson },
@@ -54,7 +97,7 @@ const Settings = () => {
                                 <h2 className="text-2xl font-bold text-white dark:text-white text-gray-900 mb-6">Profile Settings</h2>
                                 <div className="flex items-center gap-6 mb-8">
                                     <div className="w-24 h-24 bg-gradient-to-br from-primary-purple to-primary-blue rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-lg">
-                                        JD
+                                        {getInitials()}
                                     </div>
                                     <button className="px-6 py-3 bg-navy-700 dark:bg-navy-700 bg-gray-100 text-white dark:text-white text-gray-700 rounded-lg hover:bg-navy-600 dark:hover:bg-navy-600 hover:bg-gray-200 transition-all duration-200 font-medium shadow-sm">
                                         Change Avatar
@@ -63,15 +106,15 @@ const Settings = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-gray-400 dark:text-gray-400 text-gray-600 text-sm font-medium mb-2">First Name</label>
-                                        <input type="text" defaultValue="John" className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
+                                        <input type="text" value={userData.firstName} onChange={(e) => setUserData({ ...userData, firstName: e.target.value })} className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
                                     </div>
                                     <div>
                                         <label className="block text-gray-400 dark:text-gray-400 text-gray-600 text-sm font-medium mb-2">Last Name</label>
-                                        <input type="text" defaultValue="Doe" className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
+                                        <input type="text" value={userData.lastName} onChange={(e) => setUserData({ ...userData, lastName: e.target.value })} className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-gray-400 dark:text-gray-400 text-gray-600 text-sm font-medium mb-2">Email Address</label>
-                                        <input type="email" defaultValue="john.doe@example.com" className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
+                                        <input type="email" value={userData.email} onChange={(e) => setUserData({ ...userData, email: e.target.value })} className="w-full bg-navy-900 dark:bg-navy-900 bg-gray-50 border border-navy-700 dark:border-navy-700 border-gray-300 rounded-lg px-4 py-3 text-white dark:text-white text-gray-900 focus:border-primary-purple focus:outline-none focus:ring-2 focus:ring-primary-purple/20 transition-colors" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-gray-400 dark:text-gray-400 text-gray-600 text-sm font-medium mb-2">Bio</label>
