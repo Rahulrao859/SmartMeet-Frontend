@@ -39,7 +39,7 @@ const QuickActions = () => {
 
     return (
         <div className="mt-8 quick-actions-wrapper">
-            <h2 className="quick-actions-title text-2xl font-bold text-white mb-6">Quick Actions</h2>
+            <h2 className="quick-actions-title text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {actions.map((action, index) => {
                     const Icon = action.icon;
@@ -47,19 +47,19 @@ const QuickActions = () => {
                         <div
                             key={index}
                             onClick={() => navigate(action.path)}
-                            className="action-card-enhanced bg-gradient-to-br from-navy-800/60 to-navy-700/60 backdrop-blur-md border border-navy-600 rounded-2xl p-6 hover:border-primary-purple transition-all duration-300 hover:shadow-lg hover:shadow-primary-purple/20 cursor-pointer group relative overflow-hidden"
+                            className="action-card-enhanced bg-white border border-gray-200 rounded-2xl p-6 hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-100 cursor-pointer group relative overflow-hidden"
                         >
-                            {/* Shimmer effect on hover */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                            {/* Subtle shimmer effect on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-50 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
 
                             <div className="relative z-10 flex items-start gap-4">
-                                <div className={`action-icon-wrapper w-14 h-14 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                                <div className={`action-icon-wrapper w-14 h-14 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md`}>
                                     <Icon className="text-white text-2xl" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-white font-semibold text-lg mb-2 group-hover:text-purple-300 transition-colors duration-300">{action.title}</h3>
-                                    <p className="text-gray-400 text-sm mb-3">{action.description}</p>
-                                    <button className="text-primary-purple text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
+                                    <h3 className="text-gray-900 font-semibold text-lg mb-2 group-hover:text-purple-600 transition-colors duration-300">{action.title}</h3>
+                                    <p className="text-gray-600 text-sm mb-3">{action.description}</p>
+                                    <button className="text-purple-600 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
                                         Get Started
                                         <MdArrowForward className="group-hover:translate-x-1 transition-transform duration-200" />
                                     </button>

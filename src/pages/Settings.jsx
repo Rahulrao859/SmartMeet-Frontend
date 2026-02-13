@@ -1,6 +1,116 @@
 import React, { useState, useEffect } from 'react';
-import { MdPerson, MdNotifications, MdSecurity, MdIntegrationInstructions, MdSave, MdPalette, MdDarkMode, MdLightMode } from 'react-icons/md';
+import { MdPerson, MdNotifications, MdSecurity, MdIntegrationInstructions, MdSave, MdPalette, MdDarkMode, MdLightMode, MdCheckCircle } from 'react-icons/md';
+import { FaGoogle } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext';
+import api from '../services/api';
+
+// Google Calendar Integration Component
+const GoogleCalendarIntegration = () => {
+    const [calendarStatus, setCalendarStatus] = useState({ connected: false, email: null });
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        checkCalendarStatus();
+    }, []);
+
+    const checkCalendarStatus = async () => {
+        try {
+            const response = await api.get('/calendar/status');
+            setCalendarStatus(response.data);
+        } catch (error) {
+            console.error('Error checking calendar status:', error);
+        }
+    };
+
+    const handleConnect = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/calendar/auth');
+            if (response.data.authUrl) {
+                // Open OAuth flow in new window
+                window.open(response.data.authUrl, '_blank');
+            }
+        } catch (error) {
+            console.error('Error connecting calendar:', error);
+            alert('Failed to connect Google Calendar. Please check your configuration.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDisconnect = async () => {
+        try {
+            setLoading(true);
+            await api.post('/calendar/disconnect');
+            setCalendarStatus({ connected: false, email: null });
+            alert('Google Calendar disconnected successfully');
+        } catch (error) {
+            console.error('Error disconnecting calendar:', error);
+            alert('Failed to disconnect calendar');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Connected Calendars</h3>
+
+            <div className="p-6 bg-navy-900 dark:bg-navy-900 bg-gray-50 rounded-xl border border-navy-700 dark:border-navy-700 border-gray-200">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center shadow-md">
+                            <FaGoogle className="text-3xl text-red-500" />
+                        </div>
+                        <div>
+                            <h4 className="text-gray-900 font-semibold text-lg flex items-center gap-2">
+                                Google Calendar
+                                {calendarStatus.connected && (
+                                    <MdCheckCircle className="text-green-400" />
+                                )}
+                            </h4>
+                            <p className="text-gray-600 text-sm">
+                                {calendarStatus.connected
+                                    ? calendarStatus.email || 'Connected'
+                                    : 'Not connected'}
+                            </p>
+                            {calendarStatus.connected && (
+                                <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 bg-green-50 text-green-600 rounded-full text-xs font-medium">
+                                    <MdCheckCircle className="text-sm" />
+                                    Synced
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {calendarStatus.connected ? (
+                        <button
+                            onClick={handleDisconnect}
+                            disabled={loading}
+                            className="px-5 py-2.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/20 transition-all duration-200 font-medium disabled:opacity-50"
+                        >
+                            {loading ? 'Disconnecting...' : 'Disconnect'}
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleConnect}
+                            disabled={loading}
+                            className="px-5 py-2.5 bg-gradient-to-r from-primary-purple to-primary-blue text-white rounded-lg hover:shadow-lg hover:shadow-primary-purple/30 transition-all duration-200 font-medium disabled:opacity-50"
+                        >
+                            {loading ? 'Connecting...' : 'Connect'}
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-blue-700 text-sm">
+                    <strong>ℹ️ Info:</strong> Connecting Google Calendar will automatically create calendar events when you schedule meetings through SmartMeet.
+                </p>
+            </div>
+        </div>
+    );
+};
 
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('profile');
@@ -226,10 +336,9 @@ const Settings = () => {
                         {activeTab === 'integrations' && (
                             <div className="space-y-6">
                                 <h2 className="text-2xl font-bold text-white dark:text-white text-gray-900 mb-6">Integration Settings</h2>
-                                <p className="text-gray-400 dark:text-gray-400 text-gray-600 mb-6">Connect and manage your third-party integrations</p>
-                                <div className="text-gray-400 dark:text-gray-400 text-gray-600 text-center py-12">
-                                    No integrations configured yet. Visit the Calendar page to add integrations.
-                                </div>
+                                <p className="text-gray-400 dark:text-gray-400 text-gray-600 mb-6">Manage your connected calendars and meeting platforms</p>
+
+                                <GoogleCalendarIntegration />
                             </div>
                         )}
 

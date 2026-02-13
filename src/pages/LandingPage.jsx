@@ -259,6 +259,77 @@ const LandingPage = () => {
                 </div>
             </section>
 
+            {/* About Section */}
+            <section id="about" className="about-section">
+                <div className="section-container">
+                    <div className="section-header animate-on-scroll">
+                        <h2 className="section-title">
+                            About <span className="gradient-text">SmartMeet</span>
+                        </h2>
+                        <p className="section-description">
+                            We're on a mission to revolutionize how teams schedule and manage interviews
+                        </p>
+                    </div>
+
+                    <div className="about-grid">
+                        <div className="about-card animate-on-scroll">
+                            <div className="about-icon">
+                                <FaBolt />
+                            </div>
+                            <h3 className="about-card-title">Our Mission</h3>
+                            <p className="about-card-description">
+                                To eliminate the tedious back-and-forth of scheduling interviews by leveraging
+                                AI technology, allowing recruiters and hiring managers to focus on what truly
+                                matters—finding the best talent.
+                            </p>
+                        </div>
+
+                        <div className="about-card animate-on-scroll">
+                            <div className="about-icon">
+                                <FaUsers />
+                            </div>
+                            <h3 className="about-card-title">Our Vision</h3>
+                            <p className="about-card-description">
+                                Creating a world where scheduling meetings is instant, intelligent, and
+                                effortless. We envision a future where technology handles the logistics,
+                                so humans can focus on meaningful connections.
+                            </p>
+                        </div>
+
+                        <div className="about-card animate-on-scroll">
+                            <div className="about-icon">
+                                <FaCheckCircle />
+                            </div>
+                            <h3 className="about-card-title">Our Values</h3>
+                            <p className="about-card-description">
+                                Innovation, simplicity, and user-centricity drive everything we do. We're
+                                committed to building tools that save time, reduce stress, and enhance the
+                                hiring experience for everyone involved.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="about-stats animate-on-scroll">
+                        <div className="stat-item">
+                            <h4 className="stat-number">10,000+</h4>
+                            <p className="stat-label">Meetings Scheduled</p>
+                        </div>
+                        <div className="stat-item">
+                            <h4 className="stat-number">500+</h4>
+                            <p className="stat-label">Companies Trust Us</p>
+                        </div>
+                        <div className="stat-item">
+                            <h4 className="stat-number">95%</h4>
+                            <p className="stat-label">Time Saved</p>
+                        </div>
+                        <div className="stat-item">
+                            <h4 className="stat-number">24/7</h4>
+                            <p className="stat-label">AI-Powered Support</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Trust Section */}
             <section className="trust-section">
                 <div className="section-container">

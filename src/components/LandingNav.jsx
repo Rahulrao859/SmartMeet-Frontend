@@ -19,6 +19,7 @@ const LandingNav = () => {
                     <div className="nav-links">
                         <a href="#features" className="nav-link">Features</a>
                         <a href="#how-it-works" className="nav-link">How It Works</a>
+                        <a href="#about" className="nav-link">About</a>
                         <a href="#integrations" className="nav-link">Integrations</a>
                         <a href="#pricing" className="nav-link">Pricing</a>
                     </div>
