@@ -140,7 +140,7 @@ const AIScheduler = () => {
                                 <MdSchedule className="text-primary-purple" />
                                 AI Assistant
                             </h3>
-                            <p className="text-gray-400 text-sm">Ask me to schedule a meeting and provide participant emails. Include date, time, platform (Zoom/Google Meet), and duration.</p>
+                            <p className="text-gray-400 text-sm">Ask me to schedule a meeting and provide participant emails. You can use relative times like "in 2 hours", "tomorrow", or "2 days from now".</p>
                         </div>
 
                         {/* Messages */}
@@ -183,7 +183,7 @@ const AIScheduler = () => {
                                     type="text"
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="e.g., 'Team standup tomorrow at 10 AM on Zoom for 30 minutes' or 'Project review on Friday at 2 PM via Google Meet for 1 hour'"
+                                    placeholder="e.g., 'Team standup in 2 hours on Zoom for 30 minutes' or 'Project review tomorrow at 2 PM on Google Meet' or 'Client call 2 days from now at 10 AM on Teams'"
                                     className="flex-1 bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-primary-purple transition-colors"
                                     disabled={loading}
                                 />

@@ -5,6 +5,7 @@ import QuickActions from '../components/QuickActions';
 import { MdCalendarToday, MdCheckCircle, MdEmail, MdHome } from 'react-icons/md';
 import { FaRobot, FaUsers } from 'react-icons/fa';
 import { api } from '../services/api';
+import './Dashboard.css';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
@@ -42,59 +43,61 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            {/* Header */}
-            <div className="mb-8 flex justify-between items-start">
-                <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">Welcome to SmartMeet</h1>
-                    <p className="text-gray-400 text-lg">Your AI-powered meeting scheduler for seamless collaboration</p>
+        <div className="dashboard-wrapper">
+            <div className="dashboard-content max-w-7xl mx-auto p-8">
+                {/* Header */}
+                <div className="dashboard-header mb-8 flex justify-between items-start">
+                    <div>
+                        <h1 className="dashboard-title text-4xl font-bold text-white mb-2">Welcome to SmartMeet</h1>
+                        <p className="dashboard-subtitle text-gray-400 text-lg">Your AI-powered meeting scheduler for seamless collaboration</p>
+                    </div>
+                    <Link to="/" className="btn-return-home flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg transition-colors duration-200 border border-navy-700">
+                        <MdHome className="text-xl" />
+                        <span>Return to Home</span>
+                    </Link>
                 </div>
-                <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg transition-colors duration-200 border border-navy-700">
-                    <MdHome className="text-xl" />
-                    <span>Return to Home</span>
-                </Link>
+
+                {/* Stats Cards */}
+                {loading ? (
+                    <div className="text-center py-8">
+                        <p className="text-gray-400">Loading statistics...</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <StatsCard
+                            icon={MdCalendarToday}
+                            title="Meetings Scheduled"
+                            value={stats.meetings_scheduled.toString()}
+                            change="+12%"
+                            positive={true}
+                        />
+                        <StatsCard
+                            icon={MdEmail}
+                            title="Emails Sent"
+                            value={stats.emails_sent.toString()}
+                            change="+28%"
+                            positive={true}
+                        />
+                        <StatsCard
+                            icon={FaUsers}
+                            title="Active Participants"
+                            value={stats.active_participants.toString()}
+                            change="+6%"
+                            positive={true}
+                        />
+                        <StatsCard
+                            icon={MdCheckCircle}
+                            title="Success Rate"
+                            value={`${stats.success_rate}%`}
+                            change="+2%"
+                            positive={true}
+                        />
+                    </div>
+                )}
+
+                {/* Quick Actions */}
+                <QuickActions />
             </div>
-
-            {/* Stats Cards */}
-            {loading ? (
-                <div className="text-center py-8">
-                    <p className="text-gray-400">Loading statistics...</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatsCard
-                        icon={MdCalendarToday}
-                        title="Meetings Scheduled"
-                        value={stats.meetings_scheduled.toString()}
-                        change="+12%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={MdEmail}
-                        title="Emails Sent"
-                        value={stats.emails_sent.toString()}
-                        change="+28%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={FaUsers}
-                        title="Active Participants"
-                        value={stats.active_participants.toString()}
-                        change="+6%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={MdCheckCircle}
-                        title="Success Rate"
-                        value={`${stats.success_rate}%`}
-                        change="+2%"
-                        positive={true}
-                    />
-                </div>
-            )}
-
-            {/* Quick Actions */}
-            <QuickActions />
         </div>
     );
 };
