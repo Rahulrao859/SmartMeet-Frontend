@@ -15,9 +15,12 @@ const EmailLogs = () => {
         try {
             setLoading(true);
             const data = await api.getEmailLogs();
-            setLogs(data.logs);
+            // Add null safety check
+            setLogs(data?.logs || []);
         } catch (error) {
             console.error('Error loading email logs:', error);
+            // Set empty array on error to prevent crashes
+            setLogs([]);
         } finally {
             setLoading(false);
         }
@@ -35,9 +38,9 @@ const EmailLogs = () => {
     };
 
     const filteredLogs = logs.filter(log =>
-        log.recipient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.status.toLowerCase().includes(searchTerm.toLowerCase())
+        log?.recipient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log?.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log?.status?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (

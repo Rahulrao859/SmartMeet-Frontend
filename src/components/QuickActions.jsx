@@ -4,7 +4,7 @@ import { FaRobot, FaCalendarAlt, FaEnvelope, FaLink } from 'react-icons/fa';
 import { MdArrowForward } from 'react-icons/md';
 
 const QuickActions = () => {
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const actions = [
         {
@@ -46,7 +46,7 @@ const QuickActions = () => {
                     return (
                         <div
                             key={index}
-                            // onClick={() => navigate(action.path)}
+                            onClick={() => navigate(action.path)}
                             className="bg-gradient-to-br from-navy-800 to-navy-700 border border-navy-600 rounded-2xl p-6 hover:border-primary-purple transition-all duration-300 hover:shadow-lg hover:shadow-primary-purple/20 cursor-pointer group"
                         >
                             <div className="flex items-start gap-4">
