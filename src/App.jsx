@@ -17,7 +17,7 @@ function AppContent() {
   const isAuthPage = ['/', '/login', '/signup'].includes(location.pathname);
 
   return (
-    <div className={isAuthPage ? "" : "flex h-screen bg-navy-900 dark:bg-navy-900 bg-gray-50 overflow-hidden"}>
+    <div className={isAuthPage ? "" : "flex h-screen bg-slate-900 overflow-hidden"}>
       {/* Sidebar - only show on authenticated pages */}
       {!isAuthPage && <Sidebar />}
 
