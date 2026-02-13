@@ -1,11 +1,19 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdHome } from 'react-icons/md';
+import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdHome, MdLogout } from 'react-icons/md';
 import { FaRobot } from 'react-icons/fa';
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // Clear all authentication data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // Redirect to landing page
+        navigate('/');
+    };
 
     const menuItems = [
         { name: 'Dashboard', icon: MdDashboard, path: '/dashboard' },
@@ -53,7 +61,7 @@ const Sidebar = () => {
             </nav>
 
             {/* AI Assistant Button */}
-            <div className="p-4 border-t border-navy-700 dark:border-navy-700 border-gray-200">
+            <div className="p-4 border-t border-navy-700 dark:border-navy-700 border-gray-200 space-y-3">
                 <button onClick={() => navigate('/ai-scheduler')} className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
                     <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                         <span className="text-sm font-bold">AI</span>
@@ -62,6 +70,15 @@ const Sidebar = () => {
                         <p className="font-semibold text-sm">AI Assistant</p>
                         <p className="text-xs text-gray-200">Always Available</p>
                     </div>
+                </button>
+
+                {/* Logout Button */}
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-3 bg-red-600 bg-opacity-20 hover:bg-opacity-30 rounded-lg text-red-400 hover:text-red-300 transition-all duration-200 border border-red-600 border-opacity-30"
+                >
+                    <MdLogout className="text-xl" />
+                    <span className="font-medium">Logout</span>
                 </button>
             </div>
         </div>
