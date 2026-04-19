@@ -17,12 +17,12 @@ function AppContent() {
   const isAuthPage = ['/', '/login', '/signup'].includes(location.pathname);
 
   return (
-    <div className={isAuthPage ? "" : "flex h-screen bg-slate-900 overflow-hidden"}>
+    <div className={isAuthPage ? "" : "app-dashboard-wrapper"}>
       {/* Sidebar - only show on authenticated pages */}
       {!isAuthPage && <Sidebar />}
 
       {/* Main Content */}
-      <div className={isAuthPage ? "" : "flex-1 overflow-y-auto"}>
+      <div className={isAuthPage ? "" : "app-dashboard-content"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />

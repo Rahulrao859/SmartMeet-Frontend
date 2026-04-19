@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPaperPlane, FaCalendarAlt, FaClock, FaUsers, FaEnvelope } from 'react-icons/fa';
-import { MdSchedule } from 'react-icons/md';
+import { FaPaperPlane, FaCalendarAlt, FaClock, FaUsers, FaEnvelope, FaRobot } from 'react-icons/fa';
 import { api, handleApiError } from '../services/api';
 
 const AIScheduler = () => {
@@ -17,7 +16,6 @@ const AIScheduler = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Load meetings on component mount
     useEffect(() => {
         loadMeetings();
     }, []);
@@ -25,7 +23,6 @@ const AIScheduler = () => {
     const loadMeetings = async () => {
         try {
             const data = await api.getMeetings();
-            // Format meetings for display
             const formattedMeetings = data.meetings.map(meeting => ({
                 id: meeting.id,
                 title: meeting.title,
@@ -65,7 +62,6 @@ const AIScheduler = () => {
         setError(null);
         setLoading(true);
 
-        // Add user message to chat
         const userMessage = {
             type: 'user',
             text: `${message}\n📧 Emails: ${emails}`,
@@ -74,10 +70,7 @@ const AIScheduler = () => {
         setMessages(prev => [...prev, userMessage]);
 
         try {
-            // Call backend API
             const response = await api.scheduleMeeting(message, emails);
-
-            // Add AI response
             const aiResponse = {
                 type: 'ai',
                 text: `✅ Meeting "${response.meeting.title}" has been scheduled!\n\n` +
@@ -92,18 +85,12 @@ const AIScheduler = () => {
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             setMessages(prev => [...prev, aiResponse]);
-
-            // Reload meetings to show the new one
             await loadMeetings();
-
-            // Clear inputs
             setMessage('');
             setEmails('');
-
         } catch (err) {
             const errorMessage = handleApiError(err);
             setError(errorMessage);
-
             const aiErrorResponse = {
                 type: 'ai',
                 text: `❌ Error: ${errorMessage}`,
@@ -116,136 +103,139 @@ const AIScheduler = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold text-white mb-2">AI Scheduler</h1>
-                <p className="text-gray-400 text-lg">Schedule meetings effortlessly with AI assistance</p>
+        <div className="page-container">
+            <div className="page-header">
+                <h1>AI Scheduler</h1>
+                <p>Schedule meetings effortlessly with AI assistance</p>
             </div>
 
-            {/* Error Banner */}
             {error && (
-                <div className="mb-6 bg-red-500 bg-opacity-10 border border-red-500 rounded-xl p-4">
-                    <p className="text-red-400">⚠️ {error}</p>
+                <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '12px', marginBottom: '24px', fontSize: '14px' }}>
+                    ⚠️ {error}
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Chat Interface */}
-                <div className="lg:col-span-2">
-                    <div className="bg-gradient-to-br from-navy-800 to-navy-700 border border-navy-600 rounded-2xl overflow-hidden h-[700px] flex flex-col">
-                        {/* Chat Header */}
-                        <div className="bg-navy-900 border-b border-navy-600 px-6 py-4">
-                            <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-                                <MdSchedule className="text-primary-purple" />
-                                AI Assistant
-                            </h3>
-                            <p className="text-gray-400 text-sm">Ask me to schedule a meeting and provide participant emails. You can use relative times like "in 2 hours", "tomorrow", or "2 days from now".</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                
+                {/* Chat Interface (Left - Wider) */}
+                <div className="card-clean" style={{ gridColumn: '1 / span 2', display: 'flex', flexDirection: 'column', height: '700px', padding: '0', overflow: 'hidden' }}>
+                    <div style={{ padding: '24px', borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(108, 99, 255, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6C63FF' }}>
+                            <FaRobot size={20} />
                         </div>
+                        <div>
+                            <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)' }}>AI Assistant</h3>
+                            <p style={{ margin: '0', fontSize: '13px', color: 'var(--text-muted)' }}>Ask me to schedule a meeting. You can use phrases like "tomorrow at 2 PM".</p>
+                        </div>
+                    </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {messages.map((msg, index) => (
-                                <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] ${msg.type === 'user' ? 'bg-gradient-to-r from-primary-purple to-primary-blue' : 'bg-navy-600'} rounded-2xl px-4 py-3`}>
-                                        <p className="text-white text-sm whitespace-pre-line">{msg.text}</p>
-                                        <p className="text-gray-300 text-xs mt-1">{msg.time}</p>
+                    <div style={{ flex: '1', overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        {messages.map((msg, index) => (
+                            <div key={index} style={{ display: 'flex', justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start' }}>
+                                <div>
+                                    <div className={msg.type === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'} style={{ whiteSpace: 'pre-line' }}>
+                                        {msg.text}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '6px', textAlign: msg.type === 'user' ? 'right' : 'left' }}>
+                                        {msg.time}
                                     </div>
                                 </div>
-                            ))}
-                            {loading && (
-                                <div className="flex justify-start">
-                                    <div className="bg-navy-600 rounded-2xl px-4 py-3">
-                                        <p className="text-white text-sm">⏳ Processing your request...</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Input Area */}
-                        <div className="bg-navy-900 border-t border-navy-600 p-4 space-y-3">
-                            {/* Email Input */}
-                            <div className="flex items-center gap-3">
-                                <FaEnvelope className="text-gray-400" />
-                                <input
-                                    type="text"
-                                    value={emails}
-                                    onChange={(e) => setEmails(e.target.value)}
-                                    placeholder="Participant emails (comma-separated)"
-                                    className="flex-1 bg-navy-800 border border-navy-600 rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary-purple transition-colors text-sm"
-                                    disabled={loading}
-                                />
                             </div>
+                        ))}
+                        {loading && (
+                            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                <div className="chat-bubble-ai">
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <svg className="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing request...
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
-                            {/* Meeting Request Input */}
-                            <form onSubmit={handleSendMessage} className="flex gap-3">
-                                <input
-                                    type="text"
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="e.g., 'Team standup in 2 hours on Zoom for 30 minutes' or 'Project review tomorrow at 2 PM on Google Meet' or 'Client call 2 days from now at 10 AM on Teams'"
-                                    className="flex-1 bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-primary-purple transition-colors"
-                                    disabled={loading}
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="bg-gradient-to-r from-primary-purple to-primary-blue hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <FaPaperPlane />
-                                    {loading ? 'Sending...' : 'Send'}
-                                </button>
-                            </form>
+                    <div style={{ padding: '20px', borderTop: '1px solid var(--card-border)', backgroundColor: '#FAFBFC' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                            <FaEnvelope style={{ color: '#9CA3AF' }} />
+                            <input
+                                type="text"
+                                value={emails}
+                                onChange={(e) => setEmails(e.target.value)}
+                                placeholder="Participant emails (comma-separated)"
+                                className="input-field"
+                                style={{ height: '40px' }}
+                                disabled={loading}
+                            />
                         </div>
+                        <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: '12px' }}>
+                            <input
+                                type="text"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type your meeting request here..."
+                                className="input-field"
+                                disabled={loading}
+                            />
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="btn-primary"
+                            >
+                                <FaPaperPlane />
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                {/* Scheduled Meetings */}
-                <div className="lg:col-span-1">
-                    <div className="bg-gradient-to-br from-navy-800 to-navy-700 border border-navy-600 rounded-2xl p-6">
-                        <h3 className="text-white font-semibold text-xl mb-6 flex items-center gap-2">
-                            <FaCalendarAlt className="text-primary-purple" />
-                            Scheduled Meetings
-                        </h3>
+                {/* Scheduled Meetings (Right) */}
+                <div className="card-clean" style={{ gridColumn: '3 / span 1', height: '700px', padding: '0', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '24px', borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(108, 99, 255, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6C63FF' }}>
+                            <FaCalendarAlt size={18} />
+                        </div>
+                        <h3 style={{ margin: '0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)' }}>Scheduled Meetings</h3>
+                    </div>
 
-                        <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                            {scheduledMeetings.length === 0 ? (
-                                <p className="text-gray-400 text-sm text-center py-8">No meetings scheduled yet</p>
-                            ) : (
-                                scheduledMeetings.map((meeting) => (
+                    <div style={{ flex: '1', overflowY: 'auto', padding: '24px' }}>
+                        {scheduledMeetings.length === 0 ? (
+                            <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>
+                                <div style={{ display: 'inline-flex', padding: '16px', borderRadius: '50%', backgroundColor: '#F4F6FB', marginBottom: '16px' }}>
+                                    <FaCalendarAlt size={32} style={{ color: '#D1D5DB' }} />
+                                </div>
+                                <p style={{ fontSize: '14px' }}>No meetings scheduled yet</p>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {scheduledMeetings.map((meeting) => (
                                     <div
                                         key={meeting.id}
-                                        className="bg-navy-900 border border-navy-600 rounded-xl p-4 hover:border-primary-purple transition-all duration-300"
+                                        style={{ border: '1px solid var(--card-border)', borderRadius: '12px', padding: '16px', backgroundColor: '#FAFBFC' }}
                                     >
-                                        <h4 className="text-white font-semibold mb-2">{meeting.title}</h4>
-                                        <div className="space-y-2 text-sm">
-                                            <div className="flex items-center gap-2 text-gray-400">
-                                                <FaCalendarAlt className="text-primary-blue" />
-                                                <span>{meeting.date}</span>
+                                        <h4 style={{ margin: '0 0 12px 0', fontSize: '15px', fontWeight: '600', color: 'var(--text-dark)' }}>{meeting.title}</h4>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <FaCalendarAlt style={{ color: '#3b82f6' }} />
+                                                {meeting.date}
                                             </div>
-                                            <div className="flex items-center gap-2 text-gray-400">
-                                                <FaClock className="text-primary-purple" />
-                                                <span>{meeting.time}</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <FaClock style={{ color: '#6C63FF' }} />
+                                                {meeting.time}
                                             </div>
-                                            <div className="flex items-center gap-2 text-gray-400">
-                                                <FaUsers className="text-green-400" />
-                                                <span>{meeting.participants} participants</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <FaUsers style={{ color: '#10B981' }} />
+                                                {meeting.participants} participants
                                             </div>
-                                        </div>
-                                        <div className="mt-3">
-                                            <span className={`text-xs px-3 py-1 rounded-full ${meeting.status === 'confirmed'
-                                                ? 'bg-green-500 bg-opacity-20 text-green-400'
-                                                : 'bg-yellow-500 bg-opacity-20 text-yellow-400'
-                                                }`}>
-                                                {meeting.status.charAt(0).toUpperCase() + meeting.status.slice(1)}
-                                            </span>
                                         </div>
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
+
             </div>
         </div>
     );

@@ -1,25 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 
-const StatsCard = ({ icon: Icon, title, value, change, positive }) => {
-    return (
-        <div className="stat-card-wrapper bg-white border border-gray-200 rounded-2xl p-6 hover:border-purple-300 transition-all duration-300 hover:shadow-xl hover:shadow-purple-100 group relative overflow-hidden">
-            {/* Light overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-blue-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+const StatsCard = ({ icon: Icon, title, value, change, positive, gradient, accentColor }) => {
+    const [displayValue, setDisplayValue] = useState(0);
 
-            <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200 group-hover:scale-110 transition-transform duration-300 floating-element">
-                        <Icon className="text-white text-2xl" />
-                    </div>
-                    <div className={`flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-full ${positive ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'}`}>
-                        {positive ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
-                        <span>{change}</span>
-                    </div>
+    useEffect(() => {
+        const numericTarget = parseFloat(value.toString().replace(/[^0-9.]/g, ''));
+        const suffix = value.toString().replace(/[0-9.]/g, '');
+
+        if (isNaN(numericTarget)) {
+            setDisplayValue(value);
+            return;
+        }
+
+        let current = 0;
+        const duration = 1500;
+        const steps = 60;
+        const increment = numericTarget / steps;
+        const stepTime = duration / steps;
+
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= numericTarget) {
+                setDisplayValue(numericTarget + suffix);
+                clearInterval(timer);
+            } else {
+                setDisplayValue(Math.floor(current) + suffix);
+            }
+        }, stepTime);
+
+        return () => clearInterval(timer);
+    }, [value]);
+
+    return (
+        <div className="stat-card">
+            <div style={{ borderBottom: `3px solid ${accentColor || '#6C63FF'}`, position: 'absolute', bottom: 0, left: '20px', right: '20px', borderRadius: '0 0 2px 2px' }} />
+            <div className="stat-card-top">
+                <div className="stat-icon-box" style={{ background: gradient || 'linear-gradient(135deg, #6C63FF, #897CFF)' }}>
+                    <Icon />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-1">{value}</h3>
-                <p className="text-gray-600 text-sm font-medium">{title}</p>
+                <div className="stat-badge-green">
+                    {positive ? <TiArrowSortedUp size={14} /> : <TiArrowSortedDown size={14} />}
+                    <span>{change}</span>
+                </div>
             </div>
+            <div className="stat-number">{displayValue}</div>
+            <div className="stat-label">{title}</div>
         </div>
     );
 };

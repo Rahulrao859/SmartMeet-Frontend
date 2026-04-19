@@ -11,60 +11,64 @@ const QuickActions = () => {
             icon: FaRobot,
             title: 'Schedule a Meeting using AI',
             description: 'Use natural language to create meetings instantly',
-            color: 'from-purple-600 to-purple-700',
+            color: '#6C63FF',
+            bgColor: '#F0EEFF',
             path: '/ai-scheduler'
         },
         {
             icon: FaCalendarAlt,
             title: 'View Upcoming Meetings',
             description: 'See all your scheduled meetings at a glance',
-            color: 'from-blue-600 to-blue-700',
+            color: '#3B82F6',
+            bgColor: '#EFF6FF',
             path: '/calendar'
         },
         {
             icon: FaEnvelope,
             title: 'Email Automation Logs',
             description: 'Track all sent invitations and their status',
-            color: 'from-red-600 to-red-700',
+            color: '#EF4444',
+            bgColor: '#FFF5F5',
             path: '/email-logs'
         },
         {
             icon: FaLink,
             title: 'Calendar Integrations',
             description: 'Connect Google, Outlook, and Zoom seamlessly',
-            color: 'from-green-600 to-green-700',
+            color: '#10B981',
+            bgColor: '#F0FDF4',
             path: '/calendar'
         },
     ];
 
     return (
-        <div className="mt-8 quick-actions-wrapper">
-            <h2 className="quick-actions-title text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="qa-section">
+            <div className="section-heading">
+                <h2>Quick Actions</h2>
+                <p>Jump into your most used features</p>
+            </div>
+            <div className="quick-actions-grid">
                 {actions.map((action, index) => {
                     const Icon = action.icon;
                     return (
                         <div
                             key={index}
                             onClick={() => navigate(action.path)}
-                            className="action-card-enhanced bg-white border border-gray-200 rounded-2xl p-6 hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-100 cursor-pointer group relative overflow-hidden"
+                            className="qa-card"
+                            style={{ borderTop: `3px solid ${action.color}` }}
                         >
-                            {/* Subtle shimmer effect on hover */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-50 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-
-                            <div className="relative z-10 flex items-start gap-4">
-                                <div className={`action-icon-wrapper w-14 h-14 bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md`}>
-                                    <Icon className="text-white text-2xl" />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-gray-900 font-semibold text-lg mb-2 group-hover:text-purple-600 transition-colors duration-300">{action.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-3">{action.description}</p>
-                                    <button className="text-purple-600 text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all duration-200">
-                                        Get Started
-                                        <MdArrowForward className="group-hover:translate-x-1 transition-transform duration-200" />
-                                    </button>
-                                </div>
+                            <div className="qa-icon-wrapper" style={{ backgroundColor: action.bgColor }}>
+                                <Icon style={{ fontSize: '26px', color: action.color }} />
                             </div>
+                            <h3 className="qa-title">{action.title}</h3>
+                            <p className="qa-desc">{action.description}</p>
+                            <button
+                                className="qa-btn"
+                                onClick={(e) => { e.stopPropagation(); navigate(action.path); }}
+                            >
+                                Get Started
+                                <MdArrowForward size={16} />
+                            </button>
                         </div>
                     );
                 })}

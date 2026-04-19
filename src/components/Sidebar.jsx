@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdHome, MdLogout } from 'react-icons/md';
+import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdLogout, MdMenu, MdClose } from 'react-icons/md';
 import { FaRobot } from 'react-icons/fa';
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const handleLogout = () => {
         // Clear all authentication data
@@ -13,6 +14,10 @@ const Sidebar = () => {
         localStorage.removeItem('user');
         // Redirect to landing page
         navigate('/');
+    };
+
+    const toggleMobileMenu = () => {
+        setIsMobileOpen(!isMobileOpen);
     };
 
     const menuItems = [
@@ -25,63 +30,68 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="w-64 h-screen bg-slate-800 border-r border-slate-700 flex flex-col">
-            {/* Logo */}
-            <div className="p-6 border-b border-slate-700">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-purple to-primary-blue rounded-lg flex items-center justify-center">
-                        <FaRobot className="text-white text-xl" />
+        <>
+            {/* Mobile Hamburger Toggle outside the container so it's always accessible */}
+            <button className="mobile-nav-toggle" onClick={toggleMobileMenu}>
+                {isMobileOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+            </button>
+
+            <div className={`sidebar-container ${isMobileOpen ? 'mobile-open' : ''}`}>
+                {/* Logo */}
+                <div className="sidebar-header">
+                    <div className="sidebar-header-icon">
+                        <FaRobot />
                     </div>
-                    <div>
-                        <h1 className="text-white font-bold text-lg">SmartMeet</h1>
-                        <p className="text-gray-400 text-xs">AI Meeting Scheduler</p>
+                    <div className="sidebar-brand">
+                        <h1>SmartMeet</h1>
+                        <p>AI Meeting Scheduler</p>
                     </div>
                 </div>
+
+                {/* Menu Items */}
+                <nav className="sidebar-nav">
+                    {menuItems.map((item, index) => {
+                        const Icon = item.icon;
+                        const isActive = location.pathname === item.path;
+                        return (
+                            <Link
+                                key={index}
+                                to={item.path}
+                                onClick={() => setIsMobileOpen(false)}
+                                className={`sidebar-link ${isActive ? 'active' : ''}`}
+                            >
+                                <Icon className="sidebar-icon" />
+                                <span>{item.name}</span>
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                {/* Footer Section */}
+                <div className="sidebar-footer">
+                    {/* AI Assistant Button */}
+                    <button 
+                        onClick={() => {
+                            navigate('/ai-scheduler');
+                            setIsMobileOpen(false);
+                        }} 
+                        className="ai-assistant-card"
+                    >
+                        <div className="ai-avatar">AI</div>
+                        <div className="ai-info">
+                            <h4>AI Assistant</h4>
+                            <span>Always Available</span>
+                        </div>
+                    </button>
+
+                    {/* Logout Button */}
+                    <button onClick={handleLogout} className="sidebar-logout">
+                        <MdLogout className="sidebar-icon" />
+                        <span>Logout</span>
+                    </button>
+                </div>
             </div>
-
-            {/* Menu Items */}
-            <nav className="flex-1 py-6 px-3">
-                {menuItems.map((item, index) => {
-                    const Icon = item.icon;
-                    const isActive = location.pathname === item.path;
-                    return (
-                        <Link
-                            key={index}
-                            to={item.path}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg mb-2 transition-all duration-200 cursor-pointer ${isActive
-                                ? 'bg-gradient-to-r from-primary-purple to-primary-blue text-white'
-                                : 'text-gray-400 hover:bg-slate-700 hover:text-white'
-                                }`}
-                        >
-                            <Icon className="text-xl" />
-                            <span className="font-medium">{item.name}</span>
-                        </Link>
-                    );
-                })}
-            </nav>
-
-            {/* AI Assistant Button */}
-            <div className="p-4 border-t border-slate-700 space-y-3">
-                <button onClick={() => navigate('/ai-scheduler')} className="w-full flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-200 cursor-pointer">
-                    <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold">AI</span>
-                    </div>
-                    <div className="text-left">
-                        <p className="font-semibold text-sm">AI Assistant</p>
-                        <p className="text-xs text-gray-200">Always Available</p>
-                    </div>
-                </button>
-
-                {/* Logout Button */}
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-3 bg-red-600 bg-opacity-20 hover:bg-opacity-30 rounded-lg text-red-400 hover:text-red-300 transition-all duration-200 border border-red-600 border-opacity-30 cursor-pointer"
-                >
-                    <MdLogout className="text-xl" />
-                    <span className="font-medium">Logout</span>
-                </button>
-            </div>
-        </div>
+        </>
     );
 };
 
