@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdPerson, MdNotifications, MdSecurity, MdIntegrationInstructions, MdPalette, MdCheckCircle } from 'react-icons/md';
-import { FaGoogle } from 'react-icons/fa';
+import { FaGoogle, FaWhatsapp } from 'react-icons/fa';
 import api from '../services/api';
 
 const GoogleCalendarIntegration = () => {
@@ -88,6 +88,147 @@ const GoogleCalendarIntegration = () => {
             </div>
             <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', color: '#0369A1', fontSize: '13px' }}>
                 <strong>ℹ️ Info:</strong> Connecting Google Calendar will automatically create calendar events when you schedule meetings through SmartMeet.
+            </div>
+        </div>
+    );
+};
+
+// ─── WhatsApp Integration Component ───────────────────────────────────────────
+const WhatsAppIntegration = () => {
+    const [enabled, setEnabled] = useState(() => localStorage.getItem('wa_enabled') === 'true');
+    const [phone, setPhone] = useState(() => localStorage.getItem('wa_phone') || '');
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState('');
+    const [saved, setSaved] = useState(false);
+    const [testing, setTesting] = useState(false);
+    const [testMsg, setTestMsg] = useState('');
+
+    const handleEdit = () => { setDraft(phone); setEditing(true); setSaved(false); setTestMsg(''); };
+
+    const handleSave = () => {
+        const cleaned = draft.trim().replace(/\s/g, '');
+        if (!/^\+[1-9]\d{6,14}$/.test(cleaned)) {
+            setTestMsg('❌ Invalid format. Use international format: +91XXXXXXXXXX');
+            return;
+        }
+        setPhone(cleaned);
+        localStorage.setItem('wa_phone', cleaned);
+        localStorage.setItem('wa_enabled', 'true');
+        setEnabled(true);
+        setEditing(false);
+        setSaved(true);
+        setTestMsg('');
+        setTimeout(() => setSaved(false), 3000);
+    };
+
+    const handleToggle = () => {
+        const next = !enabled;
+        setEnabled(next);
+        localStorage.setItem('wa_enabled', String(next));
+    };
+
+    const handleTest = async () => {
+        if (!phone) { setTestMsg('❌ Save a phone number first.'); return; }
+        setTesting(true);
+        setTestMsg('');
+        try {
+            const res = await fetch('http://localhost:5000/api/whatsapp/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setTestMsg('✅ Test message sent! Check your WhatsApp.');
+            } else {
+                setTestMsg(`❌ Failed: ${data.error || 'Unknown error'}`);
+            }
+        } catch (e) {
+            setTestMsg('❌ Could not reach backend. Is the server running?');
+        } finally {
+            setTesting(false);
+        }
+    };
+
+    return (
+        <div style={{ marginTop: '24px' }}>
+            {/* Card */}
+            <div className="card-clean" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ width: '48px', height: '48px', backgroundColor: 'rgba(37,211,102,0.12)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <FaWhatsapp style={{ fontSize: '26px', color: '#25D366' }} />
+                    </div>
+                    <div>
+                        <h4 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            WhatsApp Notifications
+                            {enabled && phone && <MdCheckCircle style={{ color: '#10B981' }} />}
+                        </h4>
+                        <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-muted)' }}>
+                            {phone ? `Sending to ${phone}` : 'No number configured'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Toggle */}
+                <label className="switch" style={{ marginTop: '8px' }}>
+                    <input type="checkbox" checked={enabled} onChange={handleToggle} disabled={!phone} />
+                    <span className="slider"></span>
+                </label>
+            </div>
+
+            {/* Phone Number Config */}
+            <div style={{ marginTop: '16px', padding: '20px', border: '1px solid var(--card-border)', borderRadius: '12px', backgroundColor: 'var(--bg-soft, #FAFAFA)' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '10px' }}>
+                    📱 Your WhatsApp Number (international format)
+                </label>
+
+                {editing ? (
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <input
+                            type="tel"
+                            value={draft}
+                            onChange={e => setDraft(e.target.value)}
+                            placeholder="+916987463059"
+                            className="input-field"
+                            style={{ flex: 1, minWidth: '200px' }}
+                            autoFocus
+                        />
+                        <button className="btn-primary" onClick={handleSave}>Save</button>
+                        <button className="btn-outline" onClick={() => setEditing(false)}>Cancel</button>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '15px', fontWeight: '500', color: phone ? '#111827' : '#9CA3AF', flex: 1 }}>
+                            {phone || 'Not set — click Edit to add'}
+                        </span>
+                        <button className="btn-outline" onClick={handleEdit}>Edit</button>
+                        {phone && (
+                            <button
+                                className="btn-primary"
+                                onClick={handleTest}
+                                disabled={testing}
+                                style={{ backgroundColor: '#25D366', borderColor: '#25D366' }}
+                            >
+                                {testing ? 'Sending...' : '📤 Send Test'}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Status message */}
+                {testMsg && (
+                    <p style={{ marginTop: '10px', fontSize: '13px', color: testMsg.startsWith('✅') ? '#059669' : '#DC2626', fontWeight: '500' }}>
+                        {testMsg}
+                    </p>
+                )}
+                {saved && !testMsg && (
+                    <p style={{ marginTop: '10px', fontSize: '13px', color: '#059669', fontWeight: '500' }}>✅ Number saved!</p>
+                )}
+            </div>
+
+            {/* Info box */}
+            <div style={{ marginTop: '12px', padding: '14px 16px', backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', color: '#166534', fontSize: '13px' }}>
+                <strong>ℹ️ How it works:</strong> When you schedule a meeting via AI Scheduler, a WhatsApp message with the meeting details is automatically sent to this number via Twilio sandbox.
             </div>
         </div>
     );
@@ -320,8 +461,9 @@ const Settings = () => {
                         <div>
                             <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--text-dark)', marginBottom: '8px' }}>Integrations</h2>
                             <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Connect third-party accounts to SmartMeet.</p>
-                            
+
                             <GoogleCalendarIntegration />
+                            <WhatsAppIntegration />
                         </div>
                     )}
 

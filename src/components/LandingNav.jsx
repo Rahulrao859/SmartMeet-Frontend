@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaCalendarAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 const navLinks = [
     { label: 'Features', href: '#features' },
-    { label: 'How It Works', href: '#how-it-works' },
-    { label: 'Integrations', href: '#integrations' },
     { label: 'Pricing', href: '#pricing' },
-    { label: 'About', href: '#about' },
+    { label: 'FAQ', href: '#faq' },
+    { label: 'Contact', href: '#contact' },
 ];
 
 const LandingNav = () => {
@@ -76,8 +75,14 @@ const LandingNav = () => {
         <nav className={`landing-nav ${scrolled ? 'nav-scrolled' : ''}`}>
             <div className="nav-container">
                 <a href="/" className="nav-logo" onClick={scrollToTop}>
-                    <FaCalendarAlt className="logo-icon" />
-                    <span>SmartMeet</span>
+                    <svg className="nav-logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect x="2" y="4" width="16" height="16" rx="3" stroke="#7F77DD" strokeWidth="1.8"/>
+                        <path d="M2 9h16" stroke="#7F77DD" strokeWidth="1.8"/>
+                        <circle cx="18" cy="17" r="5" fill="#1D9E75"/>
+                        <path d="M18 15v2.5l1.5 1" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M7 4V2M13 4V2" stroke="#7F77DD" strokeWidth="1.8" strokeLinecap="round"/>
+                    </svg>
+                    <span className="nav-logo-accent">Smart</span>Meet
                 </a>
 
                 <div className="nav-links">
@@ -94,11 +99,8 @@ const LandingNav = () => {
                 </div>
 
                 <div className="nav-actions">
-                    <button onClick={() => navigate('/login')} className="btn-secondary">
-                        Sign In
-                    </button>
-                    <button onClick={() => navigate('/signup')} className="btn-primary">
-                        Get Started
+                    <button onClick={() => navigate('/signup')} className="btn-nav-cta">
+                        Get started free
                     </button>
                 </div>
 
@@ -120,11 +122,8 @@ const LandingNav = () => {
                         </a>
                     ))}
                     <div className="nav-actions">
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/login'); }} className="btn-secondary">
-                            Sign In
-                        </button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/signup'); }} className="btn-primary">
-                            Get Started
+                        <button onClick={() => { setIsMobileMenuOpen(false); navigate('/signup'); }} className="btn-nav-cta">
+                            Get started free
                         </button>
                     </div>
                 </div>
