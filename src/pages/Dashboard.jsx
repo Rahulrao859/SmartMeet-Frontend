@@ -1,14 +1,4 @@
-import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
-import { Link } from 'react-router-dom';
-import StatsCard from '../components/StatsCard';
-import QuickActions from '../components/QuickActions';
-import { MdCalendarToday, MdCheckCircle, MdEmail, MdHome } from 'react-icons/md';
-import { FaRobot, FaUsers } from 'react-icons/fa';
-import { api } from '../services/api';
-
-const Dashboard = () => {
-=======
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StatsCard from '../components/StatsCard';
 import QuickActions from '../components/QuickActions';
@@ -19,7 +9,6 @@ import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
->>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     const [stats, setStats] = useState({
         meetings_scheduled: 0,
         emails_sent: 0,
@@ -27,13 +16,6 @@ const Dashboard = () => {
         active_participants: 0
     });
     const [loading, setLoading] = useState(true);
-<<<<<<< HEAD
-
-    useEffect(() => {
-        loadStats();
-    }, []);
-
-=======
     const [userName, setUserName] = useState('there');
 
     useEffect(() => {
@@ -58,15 +40,10 @@ const Dashboard = () => {
         return 'Good evening';
     };
 
->>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     const loadStats = async () => {
         try {
             setLoading(true);
             const data = await api.getStats();
-<<<<<<< HEAD
-            // Safely access stats with fallback to default values
-=======
->>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
             if (data && data.stats) {
                 setStats({
                     meetings_scheduled: data.stats.meetings_scheduled || 0,
@@ -77,72 +54,11 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error('Error loading stats:', error);
-<<<<<<< HEAD
-            // Keep default stats values on error (already set in useState)
-            // This prevents blank page
-=======
->>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
         } finally {
             setLoading(false);
         }
     };
 
-<<<<<<< HEAD
-    return (
-        <div className="max-w-7xl mx-auto p-8">
-            {/* Header */}
-            <div className="mb-8 flex justify-between items-start">
-                <div>
-                    <h1 className="text-4xl font-bold text-white mb-2">Welcome to SmartMeet</h1>
-                    <p className="text-gray-400 text-lg">Your AI-powered meeting scheduler for seamless collaboration</p>
-                </div>
-                <Link to="/" className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg transition-colors duration-200 border border-navy-700">
-                    <MdHome className="text-xl" />
-                    <span>Return to Home</span>
-                </Link>
-            </div>
-
-            {/* Stats Cards */}
-            {loading ? (
-                <div className="text-center py-8">
-                    <p className="text-gray-400">Loading statistics...</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <StatsCard
-                        icon={MdCalendarToday}
-                        title="Meetings Scheduled"
-                        value={stats.meetings_scheduled.toString()}
-                        change="+12%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={MdEmail}
-                        title="Emails Sent"
-                        value={stats.emails_sent.toString()}
-                        change="+28%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={FaUsers}
-                        title="Active Participants"
-                        value={stats.active_participants.toString()}
-                        change="+6%"
-                        positive={true}
-                    />
-                    <StatsCard
-                        icon={MdCheckCircle}
-                        title="Success Rate"
-                        value={`${stats.success_rate}%`}
-                        change="+2%"
-                        positive={true}
-                    />
-                </div>
-            )}
-
-            {/* Quick Actions */}
-            <QuickActions />
-=======
     const recentActivities = [
         { id: 1, icon: MdSchedule, title: 'Meeting scheduled with Sarah Connor', time: '10 min ago', color: '#6C63FF', bgColor: 'rgba(108, 99, 255, 0.1)' },
         { id: 2, icon: MdEmail, title: 'Invitation email sent to John Doe', time: '1 hour ago', color: '#3B82F6', bgColor: 'rgba(59, 130, 246, 0.1)' },
@@ -155,7 +71,7 @@ const Dashboard = () => {
             {/* ===== TOP BAR HEADER ===== */}
             <div className="dash-topbar">
                 <div className="dash-topbar-left">
-                    <h1>{getGreeting()}, {userName} 👋</h1>
+                    <h1>{getGreeting()}, {userName} ðŸ‘‹</h1>
                     <p>Here's what's happening with your meetings today</p>
                 </div>
                 <div className="dash-topbar-right">
@@ -263,7 +179,6 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
->>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
         </div>
     );
 };
