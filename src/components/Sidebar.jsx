@@ -1,11 +1,33 @@
+<<<<<<< HEAD
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdHome,MdVideoCall } from 'react-icons/md';
+=======
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdLogout, MdMenu, MdClose } from 'react-icons/md';
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
 import { FaRobot } from 'react-icons/fa';
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
+<<<<<<< HEAD
+=======
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+    const handleLogout = () => {
+        // Clear all authentication data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // Redirect to landing page
+        navigate('/');
+    };
+
+    const toggleMobileMenu = () => {
+        setIsMobileOpen(!isMobileOpen);
+    };
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
 
     const menuItems = [
         { name: 'Dashboard', icon: MdDashboard, path: '/dashboard' },
@@ -13,11 +35,15 @@ const Sidebar = () => {
         { name: 'Calendar', icon: MdCalendarToday, path: '/calendar' },
         { name: 'Email Logs', icon: MdEmail, path: '/email-logs' },
         { name: 'Activity', icon: MdTimeline, path: '/activity' },
+<<<<<<< HEAD
         { name: 'Meetings', icon: MdVideoCall, path: '/meetings' },
+=======
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
         { name: 'Settings', icon: MdSettings, path: '/settings' },
     ];
 
     return (
+<<<<<<< HEAD
         <div className="w-64 h-screen bg-navy-900 dark:bg-navy-900 bg-white border-r border-navy-700 dark:border-navy-700 border-gray-200 flex flex-col">
             {/* Logo */}
             <div className="p-6 border-b border-navy-700 dark:border-navy-700 border-gray-200">
@@ -66,6 +92,70 @@ const Sidebar = () => {
                 </button>
             </div>
         </div>
+=======
+        <>
+            {/* Mobile Hamburger Toggle outside the container so it's always accessible */}
+            <button className="mobile-nav-toggle" onClick={toggleMobileMenu}>
+                {isMobileOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+            </button>
+
+            <div className={`sidebar-container ${isMobileOpen ? 'mobile-open' : ''}`}>
+                {/* Logo */}
+                <div className="sidebar-header">
+                    <div className="sidebar-header-icon">
+                        <FaRobot />
+                    </div>
+                    <div className="sidebar-brand">
+                        <h1>SmartMeet</h1>
+                        <p>AI Meeting Scheduler</p>
+                    </div>
+                </div>
+
+                {/* Menu Items */}
+                <nav className="sidebar-nav">
+                    {menuItems.map((item, index) => {
+                        const Icon = item.icon;
+                        const isActive = location.pathname === item.path;
+                        return (
+                            <Link
+                                key={index}
+                                to={item.path}
+                                onClick={() => setIsMobileOpen(false)}
+                                className={`sidebar-link ${isActive ? 'active' : ''}`}
+                            >
+                                <Icon className="sidebar-icon" />
+                                <span>{item.name}</span>
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                {/* Footer Section */}
+                <div className="sidebar-footer">
+                    {/* AI Assistant Button */}
+                    <button 
+                        onClick={() => {
+                            navigate('/ai-scheduler');
+                            setIsMobileOpen(false);
+                        }} 
+                        className="ai-assistant-card"
+                    >
+                        <div className="ai-avatar">AI</div>
+                        <div className="ai-info">
+                            <h4>AI Assistant</h4>
+                            <span>Always Available</span>
+                        </div>
+                    </button>
+
+                    {/* Logout Button */}
+                    <button onClick={handleLogout} className="sidebar-logout">
+                        <MdLogout className="sidebar-icon" />
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+        </>
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     );
 };
 
