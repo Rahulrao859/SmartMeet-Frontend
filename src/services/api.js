@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+<<<<<<< HEAD
+// Configure base URL for API
+const API_BASE_URL = 'http://localhost:5000/api';
+=======
 // Configure base URL for API from environment variables
 // Falls back to localhost if not set
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
 
 // Create axios instance with default config
 const apiClient = axios.create({
@@ -13,6 +18,10 @@ const apiClient = axios.create({
     timeout: 10000, // 10 seconds
 });
 
+<<<<<<< HEAD
+// API methods
+export const api = {
+=======
 // Add request interceptor to include auth token
 apiClient.interceptors.request.use(
     (config) => {
@@ -51,6 +60,7 @@ export const api = {
         const response = await apiClient.get('/auth/me');
         return response.data;
     },
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     // Health check
     healthCheck: async () => {
         const response = await apiClient.get('/health');
@@ -92,8 +102,12 @@ export const handleApiError = (error) => {
         return error.response.data.error || 'Server error occurred';
     } else if (error.request) {
         // Request made but no response
+<<<<<<< HEAD
+        return 'Cannot connect to server. Please ensure the backend is running on http://localhost:5000';
+=======
         const backendUrl = API_BASE_URL.replace('/api', '');
         return `Cannot connect to server. Please ensure the backend is running on ${backendUrl}`;
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     } else {
         // Something else happened
         return error.message || 'An unexpected error occurred';

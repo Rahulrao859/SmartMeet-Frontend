@@ -9,11 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/interaction": "^6.1.20",
+    "@fullcalendar/react": "^6.1.20",
+    "@fullcalendar/timegrid": "^6.1.20",
+=======
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
     "axios": "^1.13.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
+<<<<<<< HEAD
+    "react-router-dom": "^6.21.0"
+=======
     "react-router-dom": "^6.30.3"
+>>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
