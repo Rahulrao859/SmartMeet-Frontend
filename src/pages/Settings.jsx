@@ -132,7 +132,8 @@ const WhatsAppIntegration = () => {
         setTesting(true);
         setTestMsg('');
         try {
-            const res = await fetch('http://localhost:5000/api/whatsapp/test', {
+            const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+            const res = await fetch(`${baseUrl}/whatsapp/test`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone })
