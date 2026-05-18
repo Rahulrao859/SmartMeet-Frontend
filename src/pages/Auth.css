@@ -1,5 +1,5 @@
-﻿/* =========================================================
-   SmartMeet Auth â€” Premium SaaS Login/Signup UI
+/* =========================================================
+   SmartMeet Auth — Premium SaaS Login/Signup UI
    ========================================================= */
 
 /* ===== Split Layout ===== */
@@ -10,10 +10,40 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.dark .auth-form-container {
+  background: linear-gradient(180deg, #0B1220 0%, #111827 100%);
+}
+
+.dark .auth-card-premium {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.dark .auth-title,
+.dark .auth-mobile-brand,
+.dark .auth-field label,
+.dark .auth-field input,
+.dark .auth-input-wrap input {
+  color: #F8FAFC;
+}
+
+.dark .auth-subtitle,
+.dark .auth-footer-text {
+  color: #CBD5E1;
+}
+
+.dark .auth-field input,
+.dark .auth-input-wrap input,
+.dark .pw-checklist,
+.dark .btn-google {
+  background: #0B1220;
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
 /* ===== Left Sidebar ===== */
 .auth-sidebar {
   width: 50%;
-  background: linear-gradient(145deg, #0F1117 0%, #1a1040 60%, #0F1117 100%);
+  background: linear-gradient(145deg, #0B1220 0%, #102A56 58%, #052E2B 100%);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -43,7 +73,7 @@
 .auth-glow-1 {
   width: 300px;
   height: 300px;
-  background: rgba(108, 99, 255, 0.25);
+  background: rgba(37, 99, 235, 0.28);
   top: -50px;
   right: -50px;
 }
@@ -51,7 +81,7 @@
 .auth-glow-2 {
   width: 200px;
   height: 200px;
-  background: rgba(129, 140, 248, 0.2);
+  background: rgba(5, 150, 105, 0.24);
   bottom: 50px;
   left: -40px;
 }
@@ -77,19 +107,19 @@
 .auth-logo-icon {
   width: 56px;
   height: 56px;
-  background: #6C63FF;
-  border-radius: 14px;
+  background: #2563EB;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
   flex-shrink: 0;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.26);
 }
 
 .auth-tagline {
   font-size: 1rem;
-  color: #A5B4FC;
+  color: #BFDBFE;
   margin: 0;
   font-weight: 400;
 }
@@ -117,12 +147,12 @@
 .auth-feature-icon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
-  background: rgba(108, 99, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #A5B4FC;
+  color: #BFDBFE;
   font-size: 1rem;
   flex-shrink: 0;
 }
@@ -135,7 +165,7 @@
 }
 
 .auth-feature-text p {
-  color: #A5B4FC;
+  color: #BFDBFE;
   font-size: 0.8125rem;
   margin: 0;
   font-weight: 400;
@@ -146,7 +176,7 @@
   margin-top: 2.5rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 20px;
 }
 
@@ -176,7 +206,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #6C63FF;
+  background: #2563EB;
   color: #FFFFFF;
   display: flex;
   align-items: center;
@@ -193,7 +223,7 @@
 /* ===== Right Form Container ===== */
 .auth-form-container {
   width: 50%;
-  background-color: #F8F9FC;
+  background: linear-gradient(180deg, #F7F9FC 0%, #EEF4FB 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,9 +235,10 @@
   width: 100%;
   max-width: 440px;
   background: #FFFFFF;
-  border-radius: 16px;
+  border: 1px solid #E3EAF3;
+  border-radius: 8px;
   padding: 2.5rem;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 24px 60px rgba(16, 24, 40, 0.12);
 }
 
 /* Mobile brand */
@@ -217,7 +248,7 @@
   gap: 8px;
   font-weight: 700;
   font-size: 1.125rem;
-  color: #0F1117;
+  color: #101828;
   margin-bottom: 1.5rem;
   justify-content: center;
 }
@@ -225,7 +256,7 @@
 .auth-logo-icon-sm {
   width: 32px;
   height: 32px;
-  background: #6C63FF;
+  background: #2563EB;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -241,7 +272,7 @@
 .auth-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0F1117;
+  color: #101828;
   letter-spacing: -0.5px;
   margin: 0 0 8px 0;
 }
@@ -249,14 +280,14 @@
 .auth-title-accent {
   width: 40px;
   height: 3px;
-  background: #6C63FF;
+  background: #2563EB;
   border-radius: 2px;
   margin-bottom: 10px;
 }
 
 .auth-subtitle {
   font-size: 0.9375rem;
-  color: #6B7280;
+  color: #667085;
   margin: 0;
 }
 
@@ -267,7 +298,7 @@
   gap: 10px;
   background: #FFF5F5;
   border: 1px solid #FECACA;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 12px 16px;
   margin-bottom: 1.25rem;
   font-size: 0.8125rem;
@@ -340,10 +371,10 @@
   width: 100%;
   height: 48px;
   border: 1.5px solid #E5E7EB;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 0 16px;
   font-size: 0.875rem;
-  color: #0F1117;
+  color: #101828;
   font-family: 'Inter', sans-serif;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -352,8 +383,8 @@
 
 .auth-field input:focus,
 .auth-input-wrap input:focus {
-  border-color: #6C63FF;
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.12);
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .auth-input-wrap input.has-icons {
@@ -362,7 +393,7 @@
 
 /* Validation borders */
 .input-valid {
-  border-color: #10B981 !important;
+  border-color: #059669 !important;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
 }
 
@@ -380,7 +411,7 @@
 }
 
 .auth-input-status-icon.valid {
-  color: #10B981;
+  color: #059669;
 }
 
 .auth-input-status-icon.invalid {
@@ -394,7 +425,7 @@
 }
 
 .auth-field-msg.valid {
-  color: #10B981;
+  color: #059669;
 }
 
 .auth-field-msg.invalid {
@@ -416,7 +447,7 @@
 }
 
 .auth-eye-btn:hover {
-  color: #6C63FF;
+  color: #2563EB;
 }
 
 /* Remember + Forgot row */
@@ -453,12 +484,12 @@
 }
 
 .auth-checkbox-wrap input:checked + .auth-checkbox-custom {
-  background: #6C63FF;
-  border-color: #6C63FF;
+  background: #2563EB;
+  border-color: #2563EB;
 }
 
 .auth-checkbox-wrap input:checked + .auth-checkbox-custom::after {
-  content: 'âœ“';
+  content: '✓';
   color: #FFFFFF;
   font-size: 11px;
   font-weight: 700;
@@ -471,7 +502,7 @@
 .auth-forgot-btn {
   background: none;
   border: none;
-  color: #6C63FF;
+  color: #2563EB;
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
@@ -507,13 +538,13 @@
 }
 
 .forgot-form input:focus {
-  border-color: #6C63FF;
+  border-color: #2563EB;
 }
 
 .forgot-submit {
   height: 40px;
   padding: 0 16px;
-  background: #6C63FF;
+  background: #2563EB;
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -526,14 +557,14 @@
 }
 
 .forgot-submit:hover {
-  background: #574FD6;
+  background: #1D4ED8;
 }
 
 .forgot-success {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #10B981;
+  color: #059669;
   font-size: 0.8125rem;
   font-weight: 500;
   padding: 10px 14px;
@@ -546,7 +577,7 @@
 /* ===== Password Checklist ===== */
 .pw-checklist {
   border: 1px solid #E5E7EB;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 14px 16px;
   background: #FFFFFF;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -560,12 +591,12 @@
   gap: 10px;
   padding: 4px 0;
   font-size: 0.8125rem;
-  color: #6B7280;
+  color: #667085;
   transition: color 0.2s ease;
 }
 
 .pw-rule-met {
-  color: #10B981;
+  color: #059669;
 }
 
 .pw-rule-warn {
@@ -584,7 +615,7 @@
 }
 
 .pw-rule-met .pw-rule-icon {
-  background: #10B981;
+  background: #059669;
   color: #FFFFFF;
 }
 
@@ -636,8 +667,8 @@
 .btn-auth-submit {
   width: 100%;
   height: 48px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #6C63FF, #818CF8);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2563EB, #059669);
   color: #FFFFFF;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -652,7 +683,7 @@
 }
 
 .btn-auth-submit:hover {
-  box-shadow: 0 4px 16px rgba(108, 99, 255, 0.35);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.24);
 }
 
 .btn-auth-submit:active {
@@ -670,7 +701,7 @@
 }
 
 .btn-success {
-  background: #10B981 !important;
+  background: #059669 !important;
 }
 
 .btn-loading {
@@ -717,7 +748,7 @@
   height: 48px;
   background: #FFFFFF;
   border: 1.5px solid #E5E7EB;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -740,11 +771,11 @@
   text-align: center;
   margin-top: 1.5rem;
   font-size: 0.875rem;
-  color: #6B7280;
+  color: #667085;
 }
 
 .auth-link {
-  color: #6C63FF;
+  color: #2563EB;
   font-weight: 600;
   text-decoration: none;
 }
@@ -793,7 +824,7 @@
 @media (max-width: 480px) {
   .auth-card-premium {
     padding: 1.5rem 1.25rem;
-    border-radius: 12px;
+    border-radius: 8px;
   }
 
   .forgot-form {

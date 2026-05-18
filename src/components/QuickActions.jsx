@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaRobot, FaCalendarAlt, FaEnvelope, FaLink } from 'react-icons/fa';
 import { MdArrowForward } from 'react-icons/md';
@@ -11,8 +11,8 @@ const QuickActions = () => {
             icon: FaRobot,
             title: 'Schedule a Meeting using AI',
             description: 'Use natural language to create meetings instantly',
-            color: '#6C63FF',
-            bgColor: '#F0EEFF',
+            color: '#2563EB',
+            bgColor: '#EAF2FF',
             path: '/ai-scheduler'
         },
         {
@@ -27,16 +27,16 @@ const QuickActions = () => {
             icon: FaEnvelope,
             title: 'Email Automation Logs',
             description: 'Track all sent invitations and their status',
-            color: '#EF4444',
-            bgColor: '#FFF5F5',
+            color: '#EA580C',
+            bgColor: '#FFF7ED',
             path: '/email-logs'
         },
         {
             icon: FaLink,
             title: 'Calendar Integrations',
             description: 'Connect Google, Outlook, and Zoom seamlessly',
-            color: '#10B981',
-            bgColor: '#F0FDF4',
+            color: '#059669',
+            bgColor: '#ECFDF5',
             path: '/calendar'
         },
     ];

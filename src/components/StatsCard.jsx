@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 
 const StatsCard = ({ icon: Icon, title, value, change, positive, gradient, accentColor }) => {
@@ -34,9 +34,9 @@ const StatsCard = ({ icon: Icon, title, value, change, positive, gradient, accen
 
     return (
         <div className="stat-card">
-            <div style={{ borderBottom: `3px solid ${accentColor || '#6C63FF'}`, position: 'absolute', bottom: 0, left: '20px', right: '20px', borderRadius: '0 0 2px 2px' }} />
+            <div style={{ borderBottom: `3px solid ${accentColor || '#2563EB'}`, position: 'absolute', bottom: 0, left: '20px', right: '20px', borderRadius: '0 0 2px 2px' }} />
             <div className="stat-card-top">
-                <div className="stat-icon-box" style={{ background: gradient || 'linear-gradient(135deg, #6C63FF, #897CFF)' }}>
+                <div className="stat-icon-box" style={{ background: gradient || 'linear-gradient(135deg, #2563EB, #60A5FA)' }}>
                     <Icon />
                 </div>
                 <div className="stat-badge-green">

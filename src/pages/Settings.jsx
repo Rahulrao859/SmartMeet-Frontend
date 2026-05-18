@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdPerson, MdNotifications, MdSecurity, MdIntegrationInstructions, MdPalette, MdCheckCircle } from 'react-icons/md';
 import { FaGoogle, FaWhatsapp } from 'react-icons/fa';
 import api from '../services/api';
@@ -86,14 +86,14 @@ const GoogleCalendarIntegration = () => {
                     </button>
                 )}
             </div>
-            <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', color: '#0369A1', fontSize: '13px' }}>
-                <strong>â„¹ï¸ Info:</strong> Connecting Google Calendar will automatically create calendar events when you schedule meetings through SmartMeet.
+            <div style={{ marginTop: '16px', padding: '16px', backgroundColor: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(37, 99, 235, 0.22)', borderRadius: '8px', color: 'var(--text-dark)', fontSize: '13px' }}>
+                <strong>Info:</strong> Connecting Google Calendar will automatically create calendar events when you schedule meetings through SmartMeet.
             </div>
         </div>
     );
 };
 
-// â”€â”€â”€ WhatsApp Integration Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── WhatsApp Integration Component ───────────────────────────────────────────
 const WhatsAppIntegration = () => {
     const [enabled, setEnabled] = useState(() => localStorage.getItem('wa_enabled') === 'true');
     const [phone, setPhone] = useState(() => localStorage.getItem('wa_phone') || '');
@@ -108,7 +108,7 @@ const WhatsAppIntegration = () => {
     const handleSave = () => {
         const cleaned = draft.trim().replace(/\s/g, '');
         if (!/^\+[1-9]\d{6,14}$/.test(cleaned)) {
-            setTestMsg('âŒ Invalid format. Use international format: +91XXXXXXXXXX');
+            setTestMsg('❌ Invalid format. Use international format: +91XXXXXXXXXX');
             return;
         }
         setPhone(cleaned);
@@ -128,7 +128,7 @@ const WhatsAppIntegration = () => {
     };
 
     const handleTest = async () => {
-        if (!phone) { setTestMsg('âŒ Save a phone number first.'); return; }
+        if (!phone) { setTestMsg('❌ Save a phone number first.'); return; }
         setTesting(true);
         setTestMsg('');
         try {
@@ -140,12 +140,12 @@ const WhatsAppIntegration = () => {
             });
             const data = await res.json();
             if (data.success) {
-                setTestMsg('âœ… Test message sent! Check your WhatsApp.');
+                setTestMsg('✅ Test message sent! Check your WhatsApp.');
             } else {
-                setTestMsg(`âŒ Failed: ${data.error || 'Unknown error'}`);
+                setTestMsg(`❌ Failed: ${data.error || 'Unknown error'}`);
             }
         } catch (e) {
-            setTestMsg('âŒ Could not reach backend. Is the server running?');
+            setTestMsg('❌ Could not reach backend. Is the server running?');
         } finally {
             setTesting(false);
         }
@@ -178,9 +178,9 @@ const WhatsAppIntegration = () => {
             </div>
 
             {/* Phone Number Config */}
-            <div style={{ marginTop: '16px', padding: '20px', border: '1px solid var(--card-border)', borderRadius: '12px', backgroundColor: 'var(--bg-soft, #FAFAFA)' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '10px' }}>
-                    ðŸ“± Your WhatsApp Number (international format)
+            <div style={{ marginTop: '16px', padding: '20px', border: '1px solid var(--card-border)', borderRadius: '8px', backgroundColor: 'var(--card-bg)' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginBottom: '10px' }}>
+                    Your WhatsApp Number (international format)
                 </label>
 
                 {editing ? (
@@ -199,8 +199,8 @@ const WhatsAppIntegration = () => {
                     </div>
                 ) : (
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '15px', fontWeight: '500', color: phone ? '#111827' : '#9CA3AF', flex: 1 }}>
-                            {phone || 'Not set â€” click Edit to add'}
+                        <span style={{ fontSize: '15px', fontWeight: '500', color: phone ? 'var(--text-dark)' : 'var(--text-muted)', flex: 1 }}>
+                            {phone || 'Not set - click Edit to add'}
                         </span>
                         <button className="btn-outline" onClick={handleEdit}>Edit</button>
                         {phone && (
@@ -210,7 +210,7 @@ const WhatsAppIntegration = () => {
                                 disabled={testing}
                                 style={{ backgroundColor: '#25D366', borderColor: '#25D366' }}
                             >
-                                {testing ? 'Sending...' : 'ðŸ“¤ Send Test'}
+                                {testing ? 'Sending...' : 'Send Test'}
                             </button>
                         )}
                     </div>
@@ -218,18 +218,18 @@ const WhatsAppIntegration = () => {
 
                 {/* Status message */}
                 {testMsg && (
-                    <p style={{ marginTop: '10px', fontSize: '13px', color: testMsg.startsWith('âœ…') ? '#059669' : '#DC2626', fontWeight: '500' }}>
+                    <p style={{ marginTop: '10px', fontSize: '13px', color: testMsg.startsWith('✅') ? '#059669' : '#DC2626', fontWeight: '500' }}>
                         {testMsg}
                     </p>
                 )}
                 {saved && !testMsg && (
-                    <p style={{ marginTop: '10px', fontSize: '13px', color: '#059669', fontWeight: '500' }}>âœ… Number saved!</p>
+                    <p style={{ marginTop: '10px', fontSize: '13px', color: '#059669', fontWeight: '500' }}>✅ Number saved!</p>
                 )}
             </div>
 
             {/* Info box */}
-            <div style={{ marginTop: '12px', padding: '14px 16px', backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px', color: '#166534', fontSize: '13px' }}>
-                <strong>â„¹ï¸ How it works:</strong> When you schedule a meeting via AI Scheduler, a WhatsApp message with the meeting details is automatically sent to this number via Twilio sandbox.
+            <div style={{ marginTop: '12px', padding: '14px 16px', backgroundColor: 'rgba(5, 150, 105, 0.1)', border: '1px solid rgba(5, 150, 105, 0.22)', borderRadius: '8px', color: 'var(--text-dark)', fontSize: '13px' }}>
+                <strong>How it works:</strong> When you schedule a meeting via AI Scheduler, a WhatsApp message with the meeting details is automatically sent to this number via Twilio sandbox.
             </div>
         </div>
     );
@@ -299,7 +299,7 @@ const Settings = () => {
 
             <div style={{ display: 'flex', gap: '32px', flexDirection: 'row', alignItems: 'flex-start' }} className="settings-layout">
                 {/* Left Sub-Navigation Panel */}
-                <div style={{ width: '240px', flexShrink: 0, backgroundColor: '#FFFFFF', borderRight: '1px solid var(--card-border)', borderRadius: '16px', padding: '16px 0', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}>
+                <div style={{ width: '240px', flexShrink: 0, backgroundColor: 'var(--card-bg)', borderRight: '1px solid var(--card-border)', borderRadius: '8px', padding: '16px 0', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)' }}>
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -313,10 +313,10 @@ const Settings = () => {
                                     alignItems: 'center',
                                     gap: '12px',
                                     padding: '12px 24px',
-                                    backgroundColor: isActive ? '#F0EEFF' : 'transparent',
-                                    color: isActive ? '#6C63FF' : '#4B5563',
+                                    backgroundColor: isActive ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+                                    color: isActive ? '#2563EB' : 'var(--text-dark)',
                                     border: 'none',
-                                    borderLeft: isActive ? '3px solid #6C63FF' : '3px solid transparent',
+                                    borderLeft: isActive ? '3px solid #2563EB' : '3px solid transparent',
                                     cursor: 'pointer',
                                     textAlign: 'left',
                                     fontSize: '14px',
@@ -324,13 +324,13 @@ const Settings = () => {
                                     transition: 'all 0.2s ease'
                                 }}
                                 onMouseEnter={(e) => {
-                                    if (!isActive) e.currentTarget.style.backgroundColor = '#F8F9FC';
+                                    if (!isActive) e.currentTarget.style.backgroundColor = 'var(--surface-hover)';
                                 }}
                                 onMouseLeave={(e) => {
                                     if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
                                 }}
                             >
-                                <Icon style={{ fontSize: '18px', color: isActive ? '#6C63FF' : '#9CA3AF' }} />
+                                <Icon style={{ fontSize: '18px', color: isActive ? '#2563EB' : '#9CA3AF' }} />
                                 {tab.label}
                             </button>
                         );
@@ -338,7 +338,7 @@ const Settings = () => {
                 </div>
 
                 {/* Right Content Panel */}
-                <div style={{ flex: 1, backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)', padding: '32px' }}>
+                <div style={{ flex: 1, backgroundColor: 'var(--card-bg)', borderRadius: '8px', border: '1px solid var(--card-border)', boxShadow: 'var(--card-shadow)', padding: '32px' }}>
                     
                     {activeTab === 'profile' && (
                         <div>
@@ -346,12 +346,12 @@ const Settings = () => {
                             
                             {/* Avatar Section */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
-                                <div style={{ width: '80px', height: '80px', backgroundColor: '#6C63FF', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontSize: '28px', fontWeight: 'bold' }}>
+                                <div style={{ width: '80px', height: '80px', backgroundColor: '#2563EB', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', fontSize: '28px', fontWeight: 'bold' }}>
                                     {getInitials()}
                                 </div>
-                                <button style={{ backgroundColor: '#FFFFFF', border: '1px solid #D1D5DB', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '500', color: '#374151', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F3F4F6'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FFFFFF'}
+                                <button style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '10px 16px', fontSize: '14px', fontWeight: '500', color: 'var(--text-dark)', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--surface-hover)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--card-bg)'}
                                 >
                                     Change Avatar
                                 </button>
@@ -360,22 +360,22 @@ const Settings = () => {
                             {/* Form Grid */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>First Name</label>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>First Name</label>
                                     <input type="text" value={userData.firstName} onChange={(e) => setUserData({ ...userData, firstName: e.target.value })} className="input-field" />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>Last Name</label>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>Last Name</label>
                                     <input type="text" value={userData.lastName} onChange={(e) => setUserData({ ...userData, lastName: e.target.value })} className="input-field" />
                                 </div>
                             </div>
                             
                             <div style={{ marginBottom: '24px' }}>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>Email Address</label>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>Email Address</label>
                                 <input type="email" value={userData.email} onChange={(e) => setUserData({ ...userData, email: e.target.value })} className="input-field" />
                             </div>
 
                             <div style={{ marginBottom: '32px' }}>
-                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>Bio</label>
+                                <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>Bio</label>
                                 <textarea 
                                     className="input-field" 
                                     style={{ height: 'auto', minHeight: '100px', padding: '12px 16px', resize: 'vertical' }} 
@@ -393,10 +393,10 @@ const Settings = () => {
                             <div>
                                 <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#EF4444', marginBottom: '8px' }}>Danger Zone</h3>
                                 <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '16px' }}>Permanently unrecoverable actions. Proceed with caution.</p>
-                                <div style={{ backgroundColor: '#FFF5F5', border: '1px solid #FECACA', borderRadius: '12px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ backgroundColor: 'var(--danger-bg)', border: '1px solid var(--danger-border)', borderRadius: '8px', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div>
-                                        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#7F1D1D' }}>Delete Account</h4>
-                                        <p style={{ margin: '0', fontSize: '13px', color: '#991B1B' }}>Permanently remove your account and all data</p>
+                                        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: 'var(--danger-heading)' }}>Delete Account</h4>
+                                        <p style={{ margin: '0', fontSize: '13px', color: 'var(--danger-copy)' }}>Permanently remove your account and all data</p>
                                     </div>
                                     <button className="btn-outline" style={{ color: '#EF4444', borderColor: '#EF4444' }}>
                                         Delete Account
@@ -442,15 +442,15 @@ const Settings = () => {
                             
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '400px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>Current Password</label>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>Current Password</label>
                                     <input type="password" className="input-field" />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>New Password</label>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>New Password</label>
                                     <input type="password" className="input-field" />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: '#4B5563', marginBottom: '8px' }}>Confirm New Password</label>
+                                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-muted)', marginBottom: '8px' }}>Confirm New Password</label>
                                     <input type="password" className="input-field" />
                                 </div>
                                 <button className="btn-primary" style={{ alignSelf: 'flex-start', marginTop: '8px' }}>Update Password</button>

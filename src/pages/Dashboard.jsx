@@ -1,11 +1,10 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StatsCard from '../components/StatsCard';
 import QuickActions from '../components/QuickActions';
 import { MdCalendarToday, MdCheckCircle, MdEmail, MdAdd, MdNotifications, MdSchedule, MdPersonAdd } from 'react-icons/md';
 import { FaUsers, FaCalendarAlt } from 'react-icons/fa';
 import { api } from '../services/api';
-import './Dashboard.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -60,7 +59,7 @@ const Dashboard = () => {
     };
 
     const recentActivities = [
-        { id: 1, icon: MdSchedule, title: 'Meeting scheduled with Sarah Connor', time: '10 min ago', color: '#6C63FF', bgColor: 'rgba(108, 99, 255, 0.1)' },
+        { id: 1, icon: MdSchedule, title: 'Meeting scheduled with Sarah Connor', time: '10 min ago', color: '#2563EB', bgColor: 'rgba(37, 99, 235, 0.1)' },
         { id: 2, icon: MdEmail, title: 'Invitation email sent to John Doe', time: '1 hour ago', color: '#3B82F6', bgColor: 'rgba(59, 130, 246, 0.1)' },
         { id: 3, icon: MdPersonAdd, title: 'Alex Smith joined the workspace', time: '2 hours ago', color: '#10B981', bgColor: 'rgba(16, 185, 129, 0.1)' },
         { id: 4, icon: MdCheckCircle, title: 'Q4 Report preparation completed', time: '5 hours ago', color: '#F59E0B', bgColor: 'rgba(245, 158, 11, 0.1)' },
@@ -71,7 +70,7 @@ const Dashboard = () => {
             {/* ===== TOP BAR HEADER ===== */}
             <div className="dash-topbar">
                 <div className="dash-topbar-left">
-                    <h1>{getGreeting()}, {userName} ðŸ‘‹</h1>
+                    <h1>{getGreeting()}, {userName}</h1>
                     <p>Here's what's happening with your meetings today</p>
                 </div>
                 <div className="dash-topbar-right">
@@ -100,8 +99,8 @@ const Dashboard = () => {
                             value={stats.meetings_scheduled.toString()}
                             change="+12%"
                             positive={true}
-                            gradient="linear-gradient(135deg, #6C63FF, #897CFF)"
-                            accentColor="#6C63FF"
+                            gradient="linear-gradient(135deg, #2563EB, #60A5FA)"
+                            accentColor="#2563EB"
                         />
                         <StatsCard
                             icon={MdEmail}
@@ -109,8 +108,8 @@ const Dashboard = () => {
                             value={stats.emails_sent.toString()}
                             change="+28%"
                             positive={true}
-                            gradient="linear-gradient(135deg, #3B82F6, #60A5FA)"
-                            accentColor="#3B82F6"
+                            gradient="linear-gradient(135deg, #0284C7, #38BDF8)"
+                            accentColor="#0284C7"
                         />
                         <StatsCard
                             icon={FaUsers}
@@ -118,8 +117,8 @@ const Dashboard = () => {
                             value={stats.active_participants.toString()}
                             change="+6%"
                             positive={true}
-                            gradient="linear-gradient(135deg, #8B5CF6, #A78BFA)"
-                            accentColor="#8B5CF6"
+                            gradient="linear-gradient(135deg, #059669, #34D399)"
+                            accentColor="#059669"
                         />
                         <StatsCard
                             icon={MdCheckCircle}
@@ -127,8 +126,8 @@ const Dashboard = () => {
                             value={`${stats.success_rate}%`}
                             change="+2%"
                             positive={true}
-                            gradient="linear-gradient(135deg, #4F46E5, #6366F1)"
-                            accentColor="#4F46E5"
+                            gradient="linear-gradient(135deg, #EA580C, #FDBA74)"
+                            accentColor="#EA580C"
                         />
                     </div>
                 )}

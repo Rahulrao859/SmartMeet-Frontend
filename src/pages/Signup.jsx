@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaRobot, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaChartLine, FaStar, FaLock } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
@@ -29,10 +29,10 @@ const Signup = () => {
         const pw = formData.password;
         return [
             { label: 'At least 8 characters', met: pw.length >= 8 },
-            { label: 'One uppercase letter (Aâ€“Z)', met: /[A-Z]/.test(pw) },
-            { label: 'One lowercase letter (aâ€“z)', met: /[a-z]/.test(pw) },
-            { label: 'One number (0â€“9)', met: /[0-9]/.test(pw) },
-            { label: 'One special character (!@#$%â€¦)', met: /[!@#$%^&*()_+\-=\[\]{}|;':",.<>?\/\\]/.test(pw) },
+            { label: 'One uppercase letter (A–Z)', met: /[A-Z]/.test(pw) },
+            { label: 'One lowercase letter (a–z)', met: /[a-z]/.test(pw) },
+            { label: 'One number (0–9)', met: /[0-9]/.test(pw) },
+            { label: 'One special character (!@#$%…)', met: /[!@#$%^&*()_+\-=\[\]{}|;':",.<>?\/\\]/.test(pw) },
             { label: 'No spaces', met: pw.length > 0 && !/\s/.test(pw) },
         ];
     }, [formData.password]);

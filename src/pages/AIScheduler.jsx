@@ -60,7 +60,6 @@ const groupTimezonesByRegion = (tzList) => {
         if (!groups[region]) groups[region] = [];
         groups[region].push(tz);
     });
-    // Sort regions and zones within each
     const sortedRegions = Object.keys(groups).sort();
     const result = {};
     sortedRegions.forEach(region => {
@@ -135,10 +134,10 @@ const TimezonePicker = ({ value, onChange, disabled }) => {
                     whiteSpace: 'nowrap',
                     opacity: disabled ? 0.5 : 1,
                     outline: 'none',
-                    boxShadow: open ? '0 0 0 3px rgba(108, 99, 255, 0.1)' : 'none',
+                    boxShadow: open ? '0 0 0 3px rgba(37, 99, 235, 0.1)' : 'none',
                 }}
             >
-                <FaGlobeAmericas style={{ color: '#6C63FF', fontSize: '14px', flexShrink: 0 }} />
+                <FaGlobeAmericas style={{ color: '#2563EB', fontSize: '14px', flexShrink: 0 }} />
                 <span>{displayName}</span>
                 <span style={{ color: '#9CA3AF', fontSize: '11px' }}>{offset}</span>
                 <FaChevronDown style={{ fontSize: '10px', color: '#9CA3AF', transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
@@ -234,7 +233,7 @@ const TimezonePicker = ({ value, onChange, disabled }) => {
                                                     cursor: 'pointer',
                                                     fontSize: '13px',
                                                     fontFamily: "'Inter', sans-serif",
-                                                    color: isSelected ? '#6C63FF' : 'var(--text-dark)',
+                                                    color: isSelected ? '#2563EB' : 'var(--text-dark)',
                                                     fontWeight: isSelected ? '600' : '400',
                                                     transition: 'background-color 0.15s ease',
                                                     textAlign: 'left',
@@ -405,19 +404,18 @@ const AIScheduler = () => {
                 </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                
-                {/* Chat Interface (Left - Wider) */}
-                <div className="card-clean" style={{ gridColumn: '1 / span 2', display: 'flex', flexDirection: 'column', height: '700px', padding: '0', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+
+                {/* Chat Interface (Left) */}
+                <div className="card-clean" style={{ display: 'flex', flexDirection: 'column', height: '700px', padding: '0', overflow: 'hidden' }}>
                     <div style={{ padding: '24px', borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(108, 99, 255, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6C63FF' }}>
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
                             <FaRobot size={20} />
                         </div>
                         <div style={{ flex: 1 }}>
                             <h3 style={{ margin: '0 0 4px 0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)' }}>AI Assistant</h3>
                             <p style={{ margin: '0', fontSize: '13px', color: 'var(--text-muted)' }}>Ask me to schedule a meeting. You can use phrases like "tomorrow at 2 PM".</p>
                         </div>
-                        {/* Timezone indicator badge in header */}
                         <div
                             style={{
                                 display: 'flex',
@@ -425,10 +423,10 @@ const AIScheduler = () => {
                                 gap: '6px',
                                 padding: '6px 12px',
                                 borderRadius: '8px',
-                                backgroundColor: 'rgba(108, 99, 255, 0.06)',
-                                border: '1px solid rgba(108, 99, 255, 0.1)',
+                                backgroundColor: 'rgba(37, 99, 235, 0.06)',
+                                border: '1px solid rgba(37, 99, 235, 0.1)',
                                 fontSize: '12px',
-                                color: '#6C63FF',
+                                color: '#2563EB',
                                 fontWeight: '500',
                                 whiteSpace: 'nowrap',
                             }}
@@ -456,9 +454,9 @@ const AIScheduler = () => {
                             <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                 <div className="chat-bubble-ai">
                                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <svg className="animate-spin h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }}>
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" style={{ opacity: 0.25 }}></circle>
+                                            <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style={{ opacity: 0.75 }}></path>
                                         </svg>
                                         Processing request...
                                     </span>
@@ -467,7 +465,7 @@ const AIScheduler = () => {
                         )}
                     </div>
 
-                    <div style={{ padding: '20px', borderTop: '1px solid var(--card-border)', backgroundColor: '#FAFBFC' }}>
+                    <div className="scheduler-composer">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                             <FaEnvelope style={{ color: '#9CA3AF', flexShrink: 0 }} />
                             <input
@@ -480,7 +478,6 @@ const AIScheduler = () => {
                                 disabled={loading}
                             />
                         </div>
-                        {/* Timezone selector row */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                             <TimezonePicker
                                 value={selectedTimezone}
@@ -512,9 +509,9 @@ const AIScheduler = () => {
                 </div>
 
                 {/* Scheduled Meetings (Right) */}
-                <div className="card-clean" style={{ gridColumn: '3 / span 1', height: '700px', padding: '0', display: 'flex', flexDirection: 'column' }}>
+                <div className="card-clean" style={{ height: '700px', padding: '0', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ padding: '24px', borderBottom: '1px solid var(--card-border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(108, 99, 255, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6C63FF' }}>
+                        <div style={{ width: '40px', height: '40px', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563EB' }}>
                             <FaCalendarAlt size={18} />
                         </div>
                         <h3 style={{ margin: '0', fontSize: '16px', fontWeight: '600', color: 'var(--text-dark)' }}>Scheduled Meetings</h3>
@@ -523,18 +520,15 @@ const AIScheduler = () => {
                     <div style={{ flex: '1', overflowY: 'auto', padding: '24px' }}>
                         {scheduledMeetings.length === 0 ? (
                             <div style={{ textAlign: 'center', color: 'var(--text-muted)', marginTop: '40px' }}>
-                                <div style={{ display: 'inline-flex', padding: '16px', borderRadius: '50%', backgroundColor: '#F4F6FB', marginBottom: '16px' }}>
-                                    <FaCalendarAlt size={32} style={{ color: '#D1D5DB' }} />
+                                <div className="scheduler-empty-icon">
+                                    <FaCalendarAlt size={32} />
                                 </div>
                                 <p style={{ fontSize: '14px' }}>No meetings scheduled yet</p>
                             </div>
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 {scheduledMeetings.map((meeting) => (
-                                    <div
-                                        key={meeting.id}
-                                        style={{ border: '1px solid var(--card-border)', borderRadius: '12px', padding: '16px', backgroundColor: '#FAFBFC' }}
-                                    >
+                                    <div key={meeting.id} className="scheduler-meeting-card">
                                         <h4 style={{ margin: '0 0 12px 0', fontSize: '15px', fontWeight: '600', color: 'var(--text-dark)' }}>{meeting.title}</h4>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -542,14 +536,13 @@ const AIScheduler = () => {
                                                 {meeting.date}
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <FaClock style={{ color: '#6C63FF' }} />
+                                                <FaClock style={{ color: '#2563EB' }} />
                                                 {meeting.time}
                                             </div>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <FaUsers style={{ color: '#10B981' }} />
                                                 {meeting.participants} participants
                                             </div>
-                                            {/* Timezone info row */}
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                 <FaGlobeAmericas style={{ color: '#F59E0B' }} />
                                                 <span>
@@ -559,22 +552,19 @@ const AIScheduler = () => {
                                                     }
                                                 </span>
                                             </div>
-                                            {/* Show converted time in user's local timezone if different */}
                                             {meeting.timezone && meeting.timezone !== selectedTimezone && meeting.rawDate && meeting.rawTime && (
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '6px',
-                                                        marginTop: '4px',
-                                                        padding: '6px 10px',
-                                                        borderRadius: '8px',
-                                                        backgroundColor: 'rgba(245, 158, 11, 0.08)',
-                                                        border: '1px solid rgba(245, 158, 11, 0.15)',
-                                                        fontSize: '12px',
-                                                        color: '#B45309',
-                                                    }}
-                                                >
+                                                <div style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    marginTop: '4px',
+                                                    padding: '6px 10px',
+                                                    borderRadius: '8px',
+                                                    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                                                    border: '1px solid rgba(245, 158, 11, 0.15)',
+                                                    fontSize: '12px',
+                                                    color: '#B45309',
+                                                }}>
                                                     <FaClock style={{ fontSize: '10px' }} />
                                                     Your time ({selectedTimezone.split('/').pop().replace(/_/g, ' ')}): {formatTimeInTimezone(meeting.rawDate, meeting.rawTime, selectedTimezone)}
                                                 </div>

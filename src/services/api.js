@@ -1,4 +1,4 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
 // Configure base URL for API from environment variables
 // Falls back to localhost if not set
@@ -23,6 +23,24 @@ apiClient.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Add response interceptor to handle 401 globally
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Clear auth data and redirect to login
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Only redirect if not already on an auth page
+            const currentPath = window.location.pathname;
+            if (!['/', '/login', '/signup'].includes(currentPath)) {
+                window.location.href = '/login';
+            }
+        }
         return Promise.reject(error);
     }
 );

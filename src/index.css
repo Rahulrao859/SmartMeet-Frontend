@@ -1,38 +1,50 @@
 /* Import Google Fonts - modern SaaS typography */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 
 :root {
-  /* High contrast SaaS palette */
+  /* Professional SaaS palette */
   --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
+  --bg-secondary: #f7f9fc;
+  --bg-tertiary: #eef4fb;
   
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #9ca3af;
+  --text-primary: #101828;
+  --text-secondary: #475467;
+  --text-tertiary: #98a2b3;
   
-  /* Brand Primary - Professional Blue */
-  --brand-primary: #0070f3;
-  --brand-primary-hover: #0051cc;
-  --brand-primary-light: #e6f0fd;
+  --brand-primary: #2563eb;
+  --brand-primary-hover: #1d4ed8;
+  --brand-primary-light: #eaf2ff;
+  --brand-accent: #059669;
   
-  /* Borders */
-  --border-light: #e5e7eb;
-  --border-focus: #0070f3;
+  --border-light: #d8e0ea;
+  --border-focus: #2563eb;
   
   /* Utilities */
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 12px;
+  --radius-lg: 8px;
   --radius-full: 9999px;
   
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-  --shadow-focus: 0 0 0 3px rgba(0, 112, 243, 0.2);
+  --shadow-md: 0 12px 32px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 22px 50px rgba(16, 24, 40, 0.12);
+  --shadow-focus: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+.dark {
+  --bg-primary: #101828;
+  --bg-secondary: #0b1220;
+  --bg-tertiary: #172033;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-light: rgba(148, 163, 184, 0.22);
 }
 
 * {
@@ -59,6 +71,32 @@ button {
   transition: all 0.2s ease-in-out;
 }
 
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+.theme-toggle svg {
+  font-size: 0.9rem;
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -69,7 +107,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--text-primary);
+  background-color: var(--brand-primary);
   color: #fff;
   font-weight: 500;
   font-size: 0.875rem;
@@ -80,7 +118,7 @@ a {
 }
 
 .btn-primary:hover {
-  background-color: #374151;
+  background-color: var(--brand-primary-hover);
 }
 
 .btn-primary:active {

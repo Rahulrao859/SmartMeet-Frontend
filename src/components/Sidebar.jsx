@@ -1,7 +1,8 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdLogout, MdMenu, MdClose } from 'react-icons/md';
 import { FaRobot } from 'react-icons/fa';
+import ThemeToggle from './ThemeToggle';
 
 const Sidebar = () => {
     const location = useLocation();
@@ -69,6 +70,8 @@ const Sidebar = () => {
 
                 {/* Footer Section */}
                 <div className="sidebar-footer">
+                    <ThemeToggle className="sidebar-theme-toggle" />
+
                     {/* AI Assistant Button */}
                     <button 
                         onClick={() => {

@@ -1,40 +1,52 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    FaBolt, FaCalendarAlt, FaBell, FaUsers, FaChartBar, FaVideo
+    FaBolt,
+    FaCalendarAlt,
+    FaBell,
+    FaUsers,
+    FaChartBar,
+    FaVideo,
+    FaCheck,
+    FaShieldAlt,
 } from 'react-icons/fa';
 import LandingNav from '../components/LandingNav';
 import './LandingPage.css';
 
-/* â”€â”€ chevron SVG for FAQ â”€â”€ */
 const ChevronDown = () => (
     <svg className="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="6 9 12 15 18 9" />
     </svg>
 );
 
-/* â”€â”€ data â”€â”€ */
 const features = [
-    { icon: FaBolt, title: 'AI time finder', text: 'Automatically detects the best slot across all attendees\u2019 calendars so you never waste time proposing options.', bg: '#EEEDFE', color: '#7F77DD' },
-    { icon: FaCalendarAlt, title: 'Calendar sync', text: 'Integrates with Google Calendar, Outlook, and Apple Calendar instantly \u2014 no import/export needed.', bg: '#E1F5EE', color: '#1D9E75' },
-    { icon: FaBell, title: 'Smart reminders', text: 'Sends personalized nudges so no one misses a meeting, with escalation rules you can customize.', bg: '#EEEDFE', color: '#7F77DD' },
-    { icon: FaUsers, title: 'Team scheduling', text: 'Coordinate group meetings across entire teams with one shared link and automatic conflict resolution.', bg: '#E1F5EE', color: '#1D9E75' },
-    { icon: FaChartBar, title: 'Analytics dashboard', text: 'Track meeting frequency, no-shows, and time-saved metrics each week to optimize your schedule.', bg: '#EEEDFE', color: '#7F77DD' },
-    { icon: FaVideo, title: 'Video integrations', text: 'Auto-generates Zoom, Meet, or Teams links for every scheduled call \u2014 zero manual steps.', bg: '#E1F5EE', color: '#1D9E75' },
+    { icon: FaBolt, title: 'AI time finder', text: "Automatically detects the best slot across attendees' calendars so teams stop trading availability messages.", bg: '#EAF2FF', color: '#2563EB' },
+    { icon: FaCalendarAlt, title: 'Calendar sync', text: 'Connect calendar workflows and keep every scheduled meeting visible in one reliable place.', bg: '#ECFDF5', color: '#059669' },
+    { icon: FaBell, title: 'Smart reminders', text: 'Send timely meeting nudges and invitation emails without manually chasing participants.', bg: '#FFF7ED', color: '#EA580C' },
+    { icon: FaUsers, title: 'Team scheduling', text: 'Coordinate group meetings with conflict-aware planning and participant tracking built in.', bg: '#F0F9FF', color: '#0284C7' },
+    { icon: FaChartBar, title: 'Analytics dashboard', text: 'Monitor meetings, emails, participants, and success rate from a clean operational dashboard.', bg: '#F5F3FF', color: '#7C3AED' },
+    { icon: FaVideo, title: 'Video ready', text: 'Prepare meeting details for virtual calls and keep context attached to every scheduled session.', bg: '#FEF2F2', color: '#DC2626' },
 ];
 
 const faqData = [
-    { q: 'Is SmartMeet free to use?', a: 'Yes \u2014 our free plan lets you schedule up to 10 meetings per month with full calendar sync. Paid plans unlock unlimited scheduling, team features, and priority support.' },
-    { q: 'Which calendars does it support?', a: 'SmartMeet integrates natively with Google Calendar, Microsoft Outlook (including Office 365), and Apple Calendar. We also offer a CalDAV connector for any custom calendar.' },
-    { q: 'How does the AI scheduling work?', a: 'Our AI analyzes every participant\u2019s calendar, time zone, and meeting preferences to find optimal slots. It factors in buffer times, focus hours, and recurring patterns to suggest the best options.' },
-    { q: 'Is my calendar data kept private?', a: 'Absolutely. We use end-to-end encryption for all calendar data in transit and at rest. We never sell or share your data, and you can delete your account and all associated data at any time.' },
-    { q: 'Can I embed a booking page on my website?', a: 'Yes, SmartMeet provides an embeddable booking widget you can add to any website with a single line of code. It\u2019s fully customizable to match your brand colors and style.' },
+    { q: 'Is SmartMeet free to use?', a: 'Yes. The starter workflow is designed for students, small teams, and early product demos.' },
+    { q: 'Which calendars does it support?', a: 'SmartMeet is built around calendar-connected scheduling workflows and can be extended for Google Calendar, Outlook, and custom integrations.' },
+    { q: 'How does the AI scheduling work?', a: 'The AI reads the meeting request, extracts date and time intent, and helps create structured meeting details with participant emails.' },
+    { q: 'Is my calendar data kept private?', a: 'Calendar and account data should be protected at the API and database layers. The interface is designed to make security expectations clear and enterprise-ready.' },
+    { q: 'Can teams use it together?', a: 'Yes. The dashboard, activity, calendar, email logs, and settings pages are built around team scheduling workflows.' },
 ];
 
 const stats = [
-    { number: '10x', label: 'Faster scheduling' },
-    { number: '98%', label: 'User satisfaction' },
-    { number: '50k+', label: 'Meetings booked' },
+    { number: '8 hrs', label: 'Saved weekly per team' },
+    { number: '3 min', label: 'Average schedule time' },
+    { number: '99%', label: 'Invite visibility' },
+];
+
+const pricingFeatures = [
+    'AI-assisted meeting requests',
+    'Calendar and email workflow tracking',
+    'Dashboard analytics and activity history',
+    'Professional team-ready interface',
 ];
 
 const LandingPage = () => {
@@ -42,14 +54,11 @@ const LandingPage = () => {
     const [openFaq, setOpenFaq] = useState(null);
     const [formStatus, setFormStatus] = useState('idle');
 
-    // Scroll-triggered fade-in animations
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fade-in-visible');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add('fade-in-visible');
                 });
             },
             { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
@@ -72,7 +81,7 @@ const LandingPage = () => {
         try {
             const response = await fetch('https://formsubmit.co/ajax/rahulrao1849@gmail.com', {
                 method: 'POST',
-                headers: { 'Accept': 'application/json' },
+                headers: { Accept: 'application/json' },
                 body: formData,
             });
 
@@ -94,45 +103,67 @@ const LandingPage = () => {
         <div className="landing-page">
             <LandingNav />
 
-            {/* ===== HERO ===== */}
             <section id="hero" className="hero-section">
-                <div className="hero-pill">
-                    <span className="hero-pill-dot" />
-                    Now in public beta
+                <div className="hero-copy">
+                    <div className="hero-pill">
+                        <span className="hero-pill-dot" />
+                        AI meeting operations platform
+                    </div>
+
+                    <h1 className="hero-title">
+                        SmartMeet for teams that schedule with less friction.
+                    </h1>
+
+                    <p className="hero-description">
+                        Plan meetings, collect participant emails, sync schedules, and track activity from a calm,
+                        professional workspace built for modern teams.
+                    </p>
+
+                    <div className="hero-actions">
+                        <button onClick={() => navigate('/signup')} className="btn-hero-primary">
+                            Start free
+                        </button>
+                        <button onClick={() => navigate('/login')} className="btn-hero-secondary">
+                            Sign in
+                        </button>
+                    </div>
+
+                    <div className="hero-trust">
+                        <span className="hero-trust-dot" />
+                        Secure scheduling workflow, email logs, and team activity in one app
+                    </div>
                 </div>
 
-                <h1 className="hero-title">
-                    The smarter way to{' '}
-                    <span className="hero-highlight">schedule meetings</span>{' '}
-                    without the back-and-forth
-                </h1>
-
-                <p className="hero-description">
-                    SmartMeet uses AI to find the best meeting times for everyone,
-                    sync across calendars, and send smart reminders â€” so you can
-                    focus on what actually matters.
-                </p>
-
-                <div className="hero-actions">
-                    <button onClick={() => navigate('/signup')} className="btn-hero-primary">
-                        Start for free
-                    </button>
-                    <button className="btn-hero-secondary">
-                        See how it works
-                    </button>
-                </div>
-
-                <div className="hero-trust">
-                    <span className="hero-trust-dot" />
-                    No credit card required Â· Setup in under 2 minutes
+                <div className="hero-visual" aria-label="SmartMeet dashboard preview">
+                    <img src="/hero-meeting.png" alt="Professional meeting workspace" />
+                    <div className="hero-preview-panel">
+                        <div className="preview-header">
+                            <span>AI Scheduler</span>
+                            <strong>Ready</strong>
+                        </div>
+                        <div className="preview-row">
+                            <FaCalendarAlt />
+                            <span>Product sync meeting</span>
+                            <strong>02:00 PM</strong>
+                        </div>
+                        <div className="preview-row">
+                            <FaUsers />
+                            <span>5 participants</span>
+                            <strong>Confirmed</strong>
+                        </div>
+                        <div className="preview-row">
+                            <FaShieldAlt />
+                            <span>Email invites</span>
+                            <strong>Tracked</strong>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* ===== STATS BAR ===== */}
             <section className="stats-bar fade-in-section">
                 <div className="stats-bar-inner">
-                    {stats.map((s, i) => (
-                        <div key={i} className="stat-card">
+                    {stats.map((s) => (
+                        <div key={s.label} className="stat-card">
                             <span className="stat-number">{s.number}</span>
                             <span className="stat-label">{s.label}</span>
                         </div>
@@ -140,20 +171,18 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* ===== FEATURES ===== */}
             <section id="features" className="section fade-in-section">
                 <div className="section-container">
                     <div className="section-header">
                         <span className="section-label">Features</span>
                         <h2 className="section-title">Everything you need to meet smarter</h2>
                         <p className="section-description">
-                            From AI scheduling to seamless integrations, SmartMeet handles the
-                            logistics so your team doesn't have to.
+                            From AI scheduling to activity tracking, SmartMeet handles meeting logistics so your team can stay focused.
                         </p>
                     </div>
                     <div className="features-grid">
-                        {features.map((f, i) => (
-                            <div key={i} className="feature-card">
+                        {features.map((f) => (
+                            <div key={f.title} className="feature-card">
                                 <div className="feature-icon" style={{ backgroundColor: f.bg, color: f.color }}>
                                     <f.icon />
                                 </div>
@@ -165,7 +194,33 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* ===== FAQ ===== */}
+            <section id="pricing" className="section pricing-section fade-in-section">
+                <div className="section-container pricing-layout">
+                    <div className="pricing-copy">
+                        <span className="section-label">Pricing</span>
+                        <h2 className="section-title">Simple enough for a project. Polished enough for a company.</h2>
+                        <p className="section-description">
+                            SmartMeet starts with one focused workspace for scheduling, calendar activity, and email visibility.
+                        </p>
+                    </div>
+                    <div className="pricing-card">
+                        <div className="pricing-card-top">
+                            <span>Starter</span>
+                            <strong>Free</strong>
+                        </div>
+                        <p>Everything needed to run the core scheduling workflow.</p>
+                        <ul>
+                            {pricingFeatures.map(item => (
+                                <li key={item}><FaCheck /> {item}</li>
+                            ))}
+                        </ul>
+                        <button onClick={() => navigate('/signup')} className="btn-hero-primary">
+                            Create workspace
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <section id="faq" className="section section-bg-subtle fade-in-section">
                 <div className="section-container">
                     <div className="section-header">
@@ -174,7 +229,7 @@ const LandingPage = () => {
                     </div>
                     <div className="faq-list">
                         {faqData.map((item, i) => (
-                            <div key={i} className={`faq-item ${openFaq === i ? 'faq-item-open' : ''}`}>
+                            <div key={item.q} className={`faq-item ${openFaq === i ? 'faq-item-open' : ''}`}>
                                 <button className="faq-question" onClick={() => toggleFaq(i)}>
                                     {item.q}
                                     <ChevronDown />
@@ -188,15 +243,13 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* ===== CONTACT ===== */}
             <section id="contact" className="section fade-in-section">
                 <div className="section-container">
                     <div className="section-header">
                         <span className="section-label">Contact</span>
                         <h2 className="section-title">Get in touch</h2>
                         <p className="section-description">
-                            Have a question, partnership idea, or just want to say hello? We'd love to
-                            hear from you.
+                            Have a question, partnership idea, or product suggestion? Send the SmartMeet team a note.
                         </p>
                     </div>
 
@@ -230,7 +283,7 @@ const LandingPage = () => {
                             </button>
 
                             {formStatus === 'sent' && (
-                                <p className="contact-success">Message sent successfully! We'll get back to you soon.</p>
+                                <p className="contact-success">Message sent successfully. We will get back to you soon.</p>
                             )}
                             {formStatus === 'error' && (
                                 <p className="contact-error">Something went wrong. Please try again.</p>
@@ -240,10 +293,9 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* ===== FOOTER ===== */}
             <footer className="footer">
                 <div className="footer-inner">
-                    <span className="footer-left">SmartMeet Â· Built with care</span>
+                    <span className="footer-left">SmartMeet - AI Meeting Scheduler</span>
                     <div className="footer-links">
                         <a href="/privacy" className="footer-link">Privacy</a>
                         <a href="/terms" className="footer-link">Terms</a>

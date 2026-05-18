@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdEmail, MdSearch, MdFilterList, MdOutlineVisibility } from 'react-icons/md';
 import { api } from '../services/api';
 
@@ -31,7 +31,7 @@ const EmailLogs = () => {
             case 'Failed': return <span className="pill-danger">Failed</span>;
             case 'Bounced': return <span className="pill-danger">Bounced</span>;
             case 'Pending': return <span style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: '600' }}>Pending</span>;
-            default: return <span style={{ backgroundColor: '#F3F4F6', color: '#6B7280', padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: '600' }}>{status}</span>;
+            default: return <span style={{ backgroundColor: 'var(--surface-hover)', color: 'var(--text-muted)', padding: '4px 10px', borderRadius: '999px', fontSize: '12px', fontWeight: '600' }}>{status}</span>;
         }
     };
 
@@ -83,8 +83,8 @@ const EmailLogs = () => {
                 </div>
             ) : filteredLogs.length === 0 ? (
                 <div className="card-clean" style={{ textAlign: 'center', padding: '80px 20px' }}>
-                    <div style={{ display: 'inline-flex', padding: '24px', borderRadius: '50%', backgroundColor: 'rgba(108, 99, 255, 0.05)', marginBottom: '24px' }}>
-                        <MdEmail size={48} style={{ color: '#6C63FF', opacity: 0.8 }} />
+                    <div style={{ display: 'inline-flex', padding: '24px', borderRadius: '50%', backgroundColor: 'rgba(37, 99, 235, 0.05)', marginBottom: '24px' }}>
+                        <MdEmail size={48} style={{ color: '#2563EB', opacity: 0.8 }} />
                     </div>
                     <h2 style={{ fontSize: '20px', fontWeight: '600', color: 'var(--text-dark)', marginBottom: '8px' }}>No email logs found</h2>
                     <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '24px' }}>Email logs will appear here once meetings are scheduled</p>
@@ -94,7 +94,7 @@ const EmailLogs = () => {
                 <div className="card-clean" style={{ padding: '0', overflow: 'hidden' }}>
                     <div style={{ overflowX: 'auto' }}>
                         <table className="clean-table">
-                            <thead style={{ backgroundColor: '#FAFBFC' }}>
+                            <thead style={{ backgroundColor: 'var(--table-header-bg)' }}>
                                 <tr>
                                     <th>Recipient</th>
                                     <th>Subject</th>
@@ -107,11 +107,11 @@ const EmailLogs = () => {
                                 {filteredLogs.map((log) => (
                                     <tr key={log.id}>
                                         <td style={{ fontWeight: '600' }}>{log.recipient}</td>
-                                        <td style={{ color: '#6B7280' }}>{log.subject}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{log.subject}</td>
                                         <td>{getStatusPill(log.status)}</td>
-                                        <td style={{ color: '#6B7280' }}>{log.date} {log.time}</td>
+                                        <td style={{ color: 'var(--text-muted)' }}>{log.date} {log.time}</td>
                                         <td style={{ textAlign: 'right' }}>
-                                            <button style={{ background: 'none', border: 'none', color: '#6C63FF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', width: '100%', fontSize: '13px', fontWeight: '500' }}>
+                                            <button style={{ background: 'none', border: 'none', color: '#2563EB', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', width: '100%', fontSize: '13px', fontWeight: '500' }}>
                                                 <MdOutlineVisibility size={16} />
                                                 View
                                             </button>
