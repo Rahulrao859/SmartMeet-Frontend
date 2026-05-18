@@ -26,5 +26,4 @@ dist-ssr
 =======
 node_modules
 .env
-.env.example
 >>>>>>> ef4bf6774ac4b7ca23a59a08549d3557d5cbda3b
