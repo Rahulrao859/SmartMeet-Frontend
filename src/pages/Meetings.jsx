@@ -1,371 +1,461 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import axios from 'axios';
+import Pagination from '../components/Pagination';
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const MEETINGS = [
-  {
-    id: 1,
-    title: "Project Sync",
-    date: "Mon, May 5",
-    time: "5:00 PM",
-    duration: "45 min",
-    link: "https://teams.microsoft.com/l/meetup-join/example1",
-    tag: "Engineering",
-    tagColor: "from-blue-500 to-cyan-400",
-    participants: [
-      { id: 1, name: "Alex Chen",    initials: "AC", status: "online",  color: "from-violet-500 to-purple-400" },
-      { id: 2, name: "Jamie Torres", initials: "JT", status: "online",  color: "from-sky-500 to-blue-400" },
-      { id: 3, name: "Morgan Lee",   initials: "ML", status: "offline", color: "from-emerald-500 to-teal-400" },
-      { id: 4, name: "Riley Park",   initials: "RP", status: "online",  color: "from-pink-500 to-rose-400" },
-    ],
-    messages: [
-      { id: 1, user: "Alex Chen",    text: "Hey everyone, agenda doc is pinned above 👆",  time: "4:52 PM" },
-      { id: 2, user: "Jamie Torres", text: "Thanks! Already had a look, let's discuss the Q3 blockers first.", time: "4:54 PM" },
-      { id: 3, user: "Morgan Lee",   text: "I'll join 5 min late, heads up!",               time: "4:58 PM" },
-    ],
-  },
-  {
-    id: 2,
-    title: "Design Review",
-    date: "Tue, May 6",
-    time: "10:00 AM",
-    duration: "60 min",
-    link: "https://meet.google.com/example2",
-    tag: "Design",
-    tagColor: "from-fuchsia-500 to-pink-400",
-    participants: [
-      { id: 1, name: "Sam Rivera",  initials: "SR", status: "online",  color: "from-orange-500 to-amber-400" },
-      { id: 2, name: "Dana Kim",    initials: "DK", status: "online",  color: "from-teal-500 to-green-400" },
-      { id: 3, name: "Quinn Patel", initials: "QP", status: "offline", color: "from-indigo-500 to-blue-400" },
-    ],
-    messages: [
-      { id: 1, user: "Sam Rivera", text: "Figma link shared in the calendar invite 🎨", time: "9:45 AM" },
-      { id: 2, user: "Dana Kim",   text: "Perfect, I'll come prepared with feedback on the nav flow.", time: "9:50 AM" },
-    ],
-  },
-  {
-    id: 3,
-    title: "Quarterly Planning",
-    date: "Wed, May 7",
-    time: "2:00 PM",
-    duration: "90 min",
-    link: "https://zoom.us/j/example3",
-    tag: "Strategy",
-    tagColor: "from-amber-500 to-yellow-400",
-    participants: [
-      { id: 1, name: "Jordan Moss",  initials: "JM", status: "online",  color: "from-red-500 to-orange-400" },
-      { id: 2, name: "Casey Wright", initials: "CW", status: "online",  color: "from-cyan-500 to-sky-400" },
-      { id: 3, name: "Blake Stone",  initials: "BS", status: "online",  color: "from-lime-500 to-green-400" },
-      { id: 4, name: "Drew Hayes",   initials: "DH", status: "offline", color: "from-violet-500 to-fuchsia-400" },
-      { id: 5, name: "Avery Cole",   initials: "AC", status: "online",  color: "from-pink-500 to-red-400" },
-    ],
-    messages: [
-      { id: 1, user: "Jordan Moss",  text: "This will be a big one — please review the OKRs doc beforehand.", time: "1:30 PM" },
-      { id: 2, user: "Casey Wright", text: "Done! I've also added a few slides on market expansion.", time: "1:45 PM" },
-      { id: 3, user: "Blake Stone",  text: "Excited for this. See everyone at 2! 🚀", time: "1:55 PM" },
-    ],
-  },
-  {
-    id: 4,
-    title: "1:1 Check-in",
-    date: "Thu, May 8",
-    time: "11:30 AM",
-    duration: "30 min",
-    link: "https://teams.microsoft.com/l/meetup-join/example4",
-    tag: "HR",
-    tagColor: "from-teal-500 to-emerald-400",
-    participants: [
-      { id: 1, name: "Nora Blaine", initials: "NB", status: "online",  color: "from-purple-500 to-indigo-400" },
-      { id: 2, name: "Theo Banks",  initials: "TB", status: "offline", color: "from-green-500 to-teal-400" },
-    ],
-    messages: [
-      { id: 1, user: "Nora Blaine", text: "Hi Theo, looking forward to our session!", time: "11:00 AM" },
-    ],
-  },
-];
+/* ─── IMPLEMENTATION 3.2 + 3.3 + 3.5 — Meetings Page ─────────
+ * Replaces the static mock-data version with:
+ *   - Real API data with pagination (3.5)
+ *   - Status filter tabs: All / Upcoming / Cancelled / Rescheduled
+ *   - Search bar (debounced, 400ms)
+ *   - Edit modal — reschedule date/time/title/platform/notes (3.2)
+ *   - Cancel button with confirmation (3.3)
+ *   - Hard delete (permanent) button (3.3)
+ */
 
-// ─── ChatBox ──────────────────────────────────────────────────────────────────
-function ChatBox({ meetingId, initialMessages }) {
-  const [msgs, setMsgs] = useState(initialMessages);
-  const [input, setInput] = useState("");
-  const bottomRef = useRef(null);
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const getAuthHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+});
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [msgs]);
+// ── Status badge colors ───────────────────────────────────────
+const STATUS_STYLE = {
+    confirmed:   { bg: 'rgba(16,185,129,0.1)',  color: '#10b981', label: '✅ Confirmed' },
+    rescheduled: { bg: 'rgba(245,158,11,0.1)',  color: '#f59e0b', label: '🔄 Rescheduled' },
+    cancelled:   { bg: 'rgba(239,68,68,0.1)',   color: '#ef4444', label: '❌ Cancelled' },
+    pending:     { bg: 'rgba(99,102,241,0.1)',  color: '#6366f1', label: '🕒 Pending' },
+};
 
-  const send = () => {
-    const text = input.trim();
-    if (!text) return;
-    const now = new Date();
-    const time = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    setMsgs((prev) => [...prev, { id: Date.now(), user: "You", text, time }]);
-    setInput("");
-  };
+// ── Platform icon mapping ─────────────────────────────────────
+const PLATFORM_ICON = {
+    'Zoom':          '🟦',
+    'Google Meet':   '🟩',
+    'Microsoft Teams':'🟪',
+    'default':       '📅',
+};
 
-  const handleKey = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-  };
-
-  return (
-    <div className="flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-[#0d1226]/70 backdrop-blur-sm">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
-        <span className="text-[11px] font-semibold tracking-widest uppercase text-slate-400">Group Chat</span>
-        <span className="ml-auto flex items-center gap-1.5 text-[11px] text-slate-500">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
-          Live
-        </span>
-      </div>
-
-      {/* Messages */}
-      <div className="flex flex-col gap-3 overflow-y-auto h-48 px-4 py-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
-        {msgs.map((m) => (
-          <div key={m.id} className={`flex flex-col gap-0.5 ${m.user === "You" ? "items-end" : "items-start"}`}>
-            <span className="text-[11px] text-slate-500 px-1">{m.user === "You" ? "You" : m.user} · {m.time}</span>
-            <div
-              className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
-                m.user === "You"
-                  ? "bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-br-sm"
-                  : "bg-white/8 text-slate-200 rounded-bl-sm border border-white/10"
-              }`}
-            >
-              {m.text}
-            </div>
-          </div>
-        ))}
-        <div ref={bottomRef} />
-      </div>
-
-      {/* Input */}
-      <div className="flex items-center gap-2 px-3 py-3 border-t border-white/10">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKey}
-          placeholder="Type a message…"
-          className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500/60 focus:bg-white/8 transition-all"
-        />
-        <button
-          onClick={send}
-          className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 transition-all shadow-lg shadow-blue-900/40 active:scale-95"
-        >
-          <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
+// ── Toast ─────────────────────────────────────────────────────
+function Toast({ msg, type, onClose }) {
+    useEffect(() => { const t = setTimeout(onClose, 3500); return () => clearTimeout(t); }, [onClose]);
+    return (
+        <div style={{
+            position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
+            background: type === 'success' ? '#10b981' : '#ef4444',
+            color: '#fff', padding: '13px 20px', borderRadius: '10px',
+            fontWeight: '500', fontSize: '14px', boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            display: 'flex', gap: '8px', alignItems: 'center',
+        }}>
+            {type === 'success' ? '✅' : '❌'} {msg}
+        </div>
+    );
 }
 
-// ─── MeetingDetails ───────────────────────────────────────────────────────────
-function MeetingDetails({ meeting }) {
-  return (
-    <div className="px-4 pb-4 pt-1 flex flex-col gap-4">
-      {/* Join Button */}
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-400">{meeting.duration} · Starts at {meeting.time}</span>
-        <a
-          href={meeting.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white text-sm font-semibold shadow-lg shadow-blue-900/40 transition-all hover:scale-105 active:scale-95"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          Join Meeting
-        </a>
-      </div>
+// ── Edit Modal ────────────────────────────────────────────────
+function EditModal({ meeting, onClose, onSave }) {
+    const [form, setForm] = useState({
+        title:    meeting.title,
+        date:     meeting.date,
+        time:     meeting.time,
+        duration: meeting.duration,
+        platform: meeting.platform,
+        notes:    meeting.notes || '',
+    });
+    const [saving, setSaving] = useState(false);
+    const [error, setError]   = useState('');
 
-      {/* Participants */}
-      <div>
-        <p className="text-[11px] font-semibold tracking-widest uppercase text-slate-400 mb-3">
-          Participants <span className="text-slate-600">({meeting.participants.length})</span>
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {meeting.participants.map((p) => (
-            <div
-              key={p.id}
-              className="flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-xl px-3 py-2 hover:bg-white/10 transition-colors cursor-default"
-            >
-              <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${p.color} flex items-center justify-center text-white text-[11px] font-bold shrink-0`}>
-                {p.initials}
-              </div>
-              <span className="text-sm text-slate-300 whitespace-nowrap">{p.name}</span>
-              <span className={`w-2 h-2 rounded-full shrink-0 ${p.status === "online" ? "bg-emerald-400" : "bg-slate-600"}`} />
+    const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+
+    const handleSave = async () => {
+        if (!form.title.trim()) { setError('Title is required'); return; }
+        setSaving(true);
+        try {
+            const { data } = await axios.patch(
+                `${API_BASE}/api/v1/meetings/${meeting._id}`,
+                form,
+                getAuthHeader()
+            );
+            onSave(data.meeting);
+            onClose();
+        } catch (err) {
+            setError(err.response?.data?.error || 'Update failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <div style={overlay} onClick={onClose}>
+            <div style={modal} onClick={e => e.stopPropagation()}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>✏️ Edit Meeting</h3>
+                    <button onClick={onClose} style={closeBtnStyle}>✕</button>
+                </div>
+
+                {error && <div style={errorBox}>⚠️ {error}</div>}
+
+                {[
+                    { key: 'title',    label: 'Title',    type: 'text' },
+                    { key: 'date',     label: 'Date',     type: 'date' },
+                    { key: 'time',     label: 'Time',     type: 'text', placeholder: 'e.g. 2:00 PM or 14:00' },
+                    { key: 'duration', label: 'Duration', type: 'text', placeholder: 'e.g. 1 hour, 30 min' },
+                ].map(({ key, label, type, placeholder }) => (
+                    <div key={key}>
+                        <label style={fieldLabel}>{label}</label>
+                        <input type={type} value={form[key]} placeholder={placeholder}
+                            onChange={e => set(key, e.target.value)}
+                            style={inputStyle} />
+                    </div>
+                ))}
+
+                <label style={fieldLabel}>Platform</label>
+                <select value={form.platform} onChange={e => set('platform', e.target.value)} style={inputStyle}>
+                    {['Google Meet', 'Zoom', 'Microsoft Teams', 'Other'].map(p => (
+                        <option key={p} value={p}>{p}</option>
+                    ))}
+                </select>
+
+                <label style={fieldLabel}>Notes</label>
+                <textarea value={form.notes} onChange={e => set('notes', e.target.value)}
+                    rows={3} placeholder="Optional notes about this meeting…"
+                    style={{ ...inputStyle, resize: 'vertical' }} />
+
+                <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                    <button onClick={onClose} style={btnOutline}>Cancel</button>
+                    <button onClick={handleSave} disabled={saving}
+                        style={{ ...btnPrimary, opacity: saving ? 0.7 : 1, flex: 1 }}>
+                        {saving ? 'Saving…' : '💾 Save Changes'}
+                    </button>
+                </div>
             </div>
-          ))}
         </div>
-      </div>
-
-      {/* Chat */}
-      <ChatBox meetingId={meeting.id} initialMessages={meeting.messages} />
-    </div>
-  );
+    );
 }
 
-// ─── MeetingCard ──────────────────────────────────────────────────────────────
-function MeetingCard({ meeting, isOpen, onToggle }) {
-  return (
-    <div
-      className={`rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer
-        ${isOpen
-          ? "border-blue-500/40 shadow-xl shadow-blue-900/20 bg-[#0d1630]"
-          : "border-white/8 hover:border-white/20 bg-[#0d1226]/60 hover:bg-[#0f1730]/80 hover:shadow-lg hover:shadow-blue-950/30 hover:scale-[1.01]"
-        }`}
-      onClick={onToggle}
-    >
-      {/* Card Header */}
-      <div className="flex items-center gap-4 px-4 py-4">
-        {/* Icon */}
-        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${meeting.tagColor} flex items-center justify-center shadow-lg shrink-0`}>
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
+// ── Confirm Modal (for cancel / delete) ───────────────────────
+function ConfirmModal({ title, message, confirmLabel, onConfirm, onClose, danger = true }) {
+    return (
+        <div style={overlay} onClick={onClose}>
+            <div style={{ ...modal, maxWidth: '380px' }} onClick={e => e.stopPropagation()}>
+                <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>{title}</h3>
+                <p style={{ color: '#64748b', lineHeight: '1.6', marginBottom: '24px' }}>{message}</p>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={onClose} style={{ ...btnOutline, flex: 1 }}>Cancel</button>
+                    <button onClick={onConfirm}
+                        style={{ ...btnPrimary, flex: 1, background: danger ? '#ef4444' : 'linear-gradient(135deg,#6366f1,#3b82f6)' }}>
+                        {confirmLabel}
+                    </button>
+                </div>
+            </div>
         </div>
+    );
+}
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-white text-[15px] truncate">{meeting.title}</p>
-          <p className="text-xs text-slate-400 mt-0.5">{meeting.date} · {meeting.time}</p>
-        </div>
+// ── Meeting Card ──────────────────────────────────────────────
+function MeetingCard({ meeting, onEdit, onCancel, onDelete, expanded, onToggle }) {
+    const statusInfo = STATUS_STYLE[meeting.status] || STATUS_STYLE.confirmed;
+    const icon = PLATFORM_ICON[meeting.platform] || PLATFORM_ICON.default;
+    const isCancelled = meeting.status === 'cancelled';
 
-        {/* Right side */}
-        <div className="flex items-center gap-3 shrink-0">
-          <span className={`hidden sm:inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gradient-to-r ${meeting.tagColor} text-white bg-opacity-20`}>
-            {meeting.tag}
-          </span>
+    return (
+        <div style={{
+            background: '#fff', borderRadius: '14px', border: '1.5px solid #f1f5f9',
+            boxShadow: expanded ? '0 8px 32px rgba(99,102,241,0.12)' : '0 2px 8px rgba(0,0,0,0.05)',
+            transition: 'all 0.2s', opacity: isCancelled ? 0.7 : 1,
+        }}>
+            {/* Card header — clickable to expand */}
+            <div onClick={onToggle} style={{ padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                {/* Platform icon */}
+                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg,#ede9fe,#dbeafe)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                    {icon}
+                </div>
 
-          {/* Avatar stack */}
-          <div className="flex -space-x-2">
-            {meeting.participants.slice(0, 3).map((p) => (
-              <div key={p.id} className={`w-6 h-6 rounded-full bg-gradient-to-br ${p.color} border-2 border-[#080e1f] flex items-center justify-center text-white text-[9px] font-bold`}>
-                {p.initials[0]}
-              </div>
-            ))}
-            {meeting.participants.length > 3 && (
-              <div className="w-6 h-6 rounded-full bg-white/10 border-2 border-[#080e1f] flex items-center justify-center text-slate-300 text-[9px] font-bold">
-                +{meeting.participants.length - 3}
-              </div>
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                        <span style={{ fontWeight: '700', fontSize: '15px', color: '#1e293b', textDecoration: isCancelled ? 'line-through' : 'none' }}>
+                            {meeting.title}
+                        </span>
+                        <span style={{ fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '20px', background: statusInfo.bg, color: statusInfo.color }}>
+                            {statusInfo.label}
+                        </span>
+                    </div>
+                    <div style={{ fontSize: '13px', color: '#64748b', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        <span>📅 {meeting.date}</span>
+                        <span>🕐 {meeting.time}</span>
+                        <span>⏱ {meeting.duration}</span>
+                        <span>📍 {meeting.platform}</span>
+                    </div>
+                </div>
+
+                {/* Chevron */}
+                <div style={{ fontSize: '16px', color: '#94a3b8', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0)' }}>▾</div>
+            </div>
+
+            {/* Expanded detail */}
+            {expanded && (
+                <div style={{ borderTop: '1px solid #f1f5f9', padding: '16px 20px' }}>
+                    {/* Participants */}
+                    {meeting.participants?.length > 0 && (
+                        <div style={{ marginBottom: '14px' }}>
+                            <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+                                Participants ({meeting.participants.length})
+                            </p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                {meeting.participants.map((email, i) => (
+                                    <span key={i} style={{ fontSize: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '3px 10px', color: '#374151' }}>
+                                        {email}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Meeting link */}
+                    {meeting.meetingLink && (
+                        <div style={{ marginBottom: '14px' }}>
+                            <a href={meeting.meetingLink} target="_blank" rel="noopener noreferrer"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', borderRadius: '8px', textDecoration: 'none', fontSize: '13px', fontWeight: '600' }}>
+                                🔗 Join Meeting
+                            </a>
+                        </div>
+                    )}
+
+                    {/* Notes */}
+                    {meeting.notes && (
+                        <div style={{ background: '#f8fafc', borderRadius: '8px', padding: '10px 14px', marginBottom: '14px' }}>
+                            <p style={{ fontSize: '12px', fontWeight: '600', color: '#94a3b8', marginBottom: '4px' }}>Notes</p>
+                            <p style={{ fontSize: '13px', color: '#475569', margin: 0, lineHeight: '1.5' }}>{meeting.notes}</p>
+                        </div>
+                    )}
+
+                    {/* Action buttons */}
+                    {!isCancelled && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            <button onClick={() => onEdit(meeting)} style={btnEdit}>✏️ Edit</button>
+                            <button onClick={() => onCancel(meeting)} style={btnCancel}>🚫 Cancel</button>
+                            <button onClick={() => onDelete(meeting)} style={btnDelete}>🗑️ Delete</button>
+                        </div>
+                    )}
+                    {isCancelled && (
+                        <button onClick={() => onDelete(meeting)} style={btnDelete}>🗑️ Permanently Delete</button>
+                    )}
+                </div>
             )}
-          </div>
-
-          {/* Chevron */}
-          <svg
-            className={`w-4 h-4 text-slate-500 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
         </div>
-      </div>
-
-      {/* Expanded Content */}
-      <div
-        className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? "max-h-[900px] opacity-100" : "max-h-0 opacity-0"}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="border-t border-white/8">
-          <MeetingDetails meeting={meeting} />
-        </div>
-      </div>
-    </div>
-  );
+    );
 }
 
-// ─── MeetingsPage ─────────────────────────────────────────────────────────────
+// ── Main Page ─────────────────────────────────────────────────
 export default function MeetingsPage() {
-  const [openId, setOpenId] = useState(null);
-  const [filter, setFilter] = useState("All");
+    const [meetings, setMeetings]       = useState([]);
+    const [pagination, setPagination]   = useState({ page: 1, pages: 1, total: 0 });
+    const [loading, setLoading]         = useState(true);
+    const [expandedId, setExpandedId]   = useState(null);
 
-  const tags = ["All", ...Array.from(new Set(MEETINGS.map((m) => m.tag)))];
+    // Filters
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchInput, setSearchInput]   = useState('');
+    const [search, setSearch]             = useState('');  // debounced value
+    const [page, setPage]                 = useState(1);
 
-  const filtered = filter === "All" ? MEETINGS : MEETINGS.filter((m) => m.tag === filter);
+    // Modals
+    const [editTarget, setEditTarget]     = useState(null);
+    const [cancelTarget, setCancelTarget] = useState(null);
+    const [deleteTarget, setDeleteTarget] = useState(null);
 
-  const toggle = (id) => setOpenId((prev) => (prev === id ? null : id));
+    const [toast, setToast] = useState(null);
+    const debounceRef       = useRef(null);
 
-  return (
-    <div className="min-h-screen bg-[#080e1f] font-[system-ui]">
-      <main className="flex flex-col min-h-screen overflow-hidden">
-        {/* Top bar */}
-        <header className="flex items-center justify-between px-6 py-5 border-b border-white/6">
-          <div>
-            <h1 className="text-white text-xl font-bold">Meetings</h1>
-            <p className="text-slate-500 text-xs mt-0.5">{MEETINGS.length} scheduled this week</p>
-          </div>
+    // Debounce search input
+    useEffect(() => {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+        return () => clearTimeout(debounceRef.current);
+    }, [searchInput]);
 
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-semibold shadow-lg shadow-blue-900/40 hover:from-blue-500 hover:to-violet-500 transition-all hover:scale-105 active:scale-95">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            New Meeting
-          </button>
-        </header>
+    // Fetch meetings
+    const fetchMeetings = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams({ page, limit: 10 });
+            if (statusFilter !== 'all') params.set('status', statusFilter);
+            if (search)                 params.set('search', search);
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {/* Filter pills */}
-          <div className="flex gap-2 mb-5 flex-wrap">
-            {tags.map((t) => (
-              <button
-                key={t}
-                onClick={() => setFilter(t)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                  filter === t
-                    ? "bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-lg shadow-blue-900/30"
-                    : "bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/10"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+            const { data } = await axios.get(`${API_BASE}/api/v1/meetings?${params}`, getAuthHeader());
+            setMeetings(data.meetings);
+            setPagination(data.pagination);
+        } catch (err) {
+            showToast(err.response?.data?.error || 'Failed to load meetings', 'error');
+        } finally {
+            setLoading(false);
+        }
+    }, [page, statusFilter, search]);
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            {[
-              { label: "This Week",   value: MEETINGS.length,  icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", color: "from-blue-500 to-cyan-400" },
-              { label: "Online Now",  value: MEETINGS.reduce((acc, m) => acc + m.participants.filter(p => p.status === "online").length, 0), icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", color: "from-emerald-500 to-teal-400" },
-              { label: "Total Mins",  value: MEETINGS.reduce((acc, m) => acc + parseInt(m.duration), 0), icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", color: "from-violet-500 to-purple-400" },
-              { label: "Messages",    value: MEETINGS.reduce((acc, m) => acc + m.messages.length, 0), icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z", color: "from-pink-500 to-rose-400" },
-            ].map((s) => (
-              <div key={s.label} className="bg-[#0a1228]/70 border border-white/8 rounded-2xl px-4 py-3 flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
-                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-white font-bold text-lg leading-tight">{s.value}</p>
-                  <p className="text-slate-500 text-[11px]">{s.label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+    useEffect(() => { fetchMeetings(); }, [fetchMeetings]);
 
-          {/* Meeting Cards */}
-          <div className="flex flex-col gap-3 pb-6">
-            {filtered.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-                <svg className="w-10 h-10 mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm">No meetings found</p>
-              </div>
-            ) : (
-              filtered.map((m) => (
-                <MeetingCard
-                  key={m.id}
-                  meeting={m}
-                  isOpen={openId === m.id}
-                  onToggle={() => toggle(m.id)}
+    const showToast = (msg, type = 'success') => setToast({ msg, type });
+
+    // ── Edit ─────────────────────────────────────────────────
+    const handleSaveEdit = (updatedMeeting) => {
+        setMeetings(prev => prev.map(m => m._id === updatedMeeting._id ? updatedMeeting : m));
+        showToast('Meeting updated successfully');
+    };
+
+    // ── Cancel ───────────────────────────────────────────────
+    const handleConfirmCancel = async () => {
+        try {
+            const { data } = await axios.delete(
+                `${API_BASE}/api/v1/meetings/${cancelTarget._id}`,
+                getAuthHeader()
+            );
+            setMeetings(prev => prev.map(m => m._id === data.meeting._id ? data.meeting : m));
+            showToast('Meeting cancelled');
+        } catch (err) {
+            showToast(err.response?.data?.error || 'Cancel failed', 'error');
+        } finally {
+            setCancelTarget(null);
+        }
+    };
+
+    // ── Hard Delete ───────────────────────────────────────────
+    const handleConfirmDelete = async () => {
+        try {
+            await axios.delete(
+                `${API_BASE}/api/v1/meetings/${deleteTarget._id}?permanent=true`,
+                getAuthHeader()
+            );
+            setMeetings(prev => prev.filter(m => m._id !== deleteTarget._id));
+            setPagination(p => ({ ...p, total: p.total - 1 }));
+            showToast('Meeting permanently deleted');
+        } catch (err) {
+            showToast(err.response?.data?.error || 'Delete failed', 'error');
+        } finally {
+            setDeleteTarget(null);
+        }
+    };
+
+    const STATUS_TABS = [
+        { value: 'all',         label: 'All' },
+        { value: 'confirmed',   label: '✅ Confirmed' },
+        { value: 'rescheduled', label: '🔄 Rescheduled' },
+        { value: 'cancelled',   label: '❌ Cancelled' },
+    ];
+
+    return (
+        <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'Inter, system-ui, sans-serif' }}>
+            {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+            {editTarget   && <EditModal meeting={editTarget} onClose={() => setEditTarget(null)} onSave={handleSaveEdit} />}
+            {cancelTarget && (
+                <ConfirmModal
+                    title="Cancel Meeting?"
+                    message={`Cancel "${cancelTarget.title}" on ${cancelTarget.date}? Participants will be notified by email.`}
+                    confirmLabel="🚫 Yes, Cancel It"
+                    onConfirm={handleConfirmCancel}
+                    onClose={() => setCancelTarget(null)}
                 />
-              ))
             )}
-          </div>
+            {deleteTarget && (
+                <ConfirmModal
+                    title="Permanently Delete?"
+                    message={`This will permanently remove "${deleteTarget.title}" and all its email logs. This cannot be undone.`}
+                    confirmLabel="🗑️ Delete Forever"
+                    onConfirm={handleConfirmDelete}
+                    onClose={() => setDeleteTarget(null)}
+                />
+            )}
+
+            {/* Header */}
+            <header style={{ background: '#fff', borderBottom: '1px solid #f1f5f9', padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '22px', fontWeight: '800', color: '#1e293b' }}>Meetings</h1>
+                    <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#94a3b8' }}>
+                        {loading ? 'Loading…' : `${pagination.total} meeting${pagination.total !== 1 ? 's' : ''}`}
+                    </p>
+                </div>
+                {/* Search */}
+                <div style={{ position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px' }}>🔍</span>
+                    <input
+                        type="text"
+                        value={searchInput}
+                        onChange={e => setSearchInput(e.target.value)}
+                        placeholder="Search meetings…"
+                        style={{ paddingLeft: '34px', padding: '9px 14px 9px 34px', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '14px', outline: 'none', width: '220px', fontFamily: 'inherit' }}
+                    />
+                </div>
+            </header>
+
+            <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px 20px' }}>
+                {/* Status filter tabs */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                    {STATUS_TABS.map(tab => (
+                        <button key={tab.value} onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+                            style={{
+                                padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: '600', cursor: 'pointer', border: 'none', transition: 'all 0.15s',
+                                background: statusFilter === tab.value ? 'linear-gradient(135deg,#6366f1,#3b82f6)' : '#fff',
+                                color:      statusFilter === tab.value ? '#fff' : '#64748b',
+                                boxShadow:  statusFilter === tab.value ? '0 2px 8px rgba(99,102,241,0.3)' : '0 1px 4px rgba(0,0,0,0.07)',
+                            }}>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Meeting list */}
+                {loading ? (
+                    // Skeleton loader
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {[1, 2, 3].map(i => (
+                            <div key={i} style={{ background: '#fff', borderRadius: '14px', padding: '20px', border: '1.5px solid #f1f5f9', animation: 'pulse 1.5s ease-in-out infinite' }}>
+                                <div style={{ height: '16px', background: '#f1f5f9', borderRadius: '6px', width: '40%', marginBottom: '10px' }} />
+                                <div style={{ height: '12px', background: '#f1f5f9', borderRadius: '6px', width: '60%' }} />
+                            </div>
+                        ))}
+                    </div>
+                ) : meetings.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8' }}>
+                        <div style={{ fontSize: '48px', marginBottom: '12px' }}>📅</div>
+                        <p style={{ fontSize: '16px', fontWeight: '600', color: '#64748b', margin: '0 0 8px' }}>No meetings found</p>
+                        <p style={{ fontSize: '14px', margin: 0 }}>
+                            {search ? `No results for "${search}"` : 'Schedule your first meeting using the AI Scheduler'}
+                        </p>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {meetings.map(m => (
+                            <MeetingCard
+                                key={m._id}
+                                meeting={m}
+                                expanded={expandedId === m._id}
+                                onToggle={() => setExpandedId(prev => prev === m._id ? null : m._id)}
+                                onEdit={setEditTarget}
+                                onCancel={setCancelTarget}
+                                onDelete={setDeleteTarget}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                {/* Pagination */}
+                <Pagination
+                    currentPage={pagination.page}
+                    totalPages={pagination.pages}
+                    onPageChange={setPage}
+                    disabled={loading}
+                />
+            </div>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
+
+// ── Shared style constants ────────────────────────────────────
+const overlay    = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(2px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' };
+const modal      = { background: '#fff', borderRadius: '18px', padding: '28px', width: '100%', maxWidth: '480px', boxShadow: '0 24px 60px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' };
+const fieldLabel = { display: 'block', fontSize: '13px', fontWeight: '600', color: '#374151', marginBottom: '6px' };
+const inputStyle = { width: '100%', padding: '10px 13px', border: '1.5px solid #e2e8f0', borderRadius: '9px', fontSize: '14px', marginBottom: '14px', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit', background: '#fff' };
+const btnPrimary = { padding: '11px 20px', background: 'linear-gradient(135deg,#6366f1,#3b82f6)', color: '#fff', border: 'none', borderRadius: '9px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' };
+const btnOutline = { padding: '11px 20px', background: '#fff', color: '#64748b', border: '1.5px solid #e2e8f0', borderRadius: '9px', fontSize: '14px', fontWeight: '500', cursor: 'pointer' };
+const closeBtnStyle = { background: 'none', border: 'none', fontSize: '18px', color: '#94a3b8', cursor: 'pointer', padding: '4px' };
+const errorBox   = { background: 'rgba(239,68,68,0.08)', color: '#dc2626', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', marginBottom: '14px' };
+const btnEdit    = { padding: '7px 14px', background: '#eff6ff', color: '#3b82f6', border: '1.5px solid #bfdbfe', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' };
+const btnCancel  = { padding: '7px 14px', background: '#fff7ed', color: '#f59e0b', border: '1.5px solid #fcd34d', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' };
+const btnDelete  = { padding: '7px 14px', background: '#fef2f2', color: '#ef4444', border: '1.5px solid #fecaca', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' };

@@ -3,12 +3,14 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaRobot, FaCalendarAlt, FaEnvelope, FaCheck, FaTimes, FaChartLine, FaStar, FaLock } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { api, handleApiError } from '../services/api';
+import { useSocket } from '../context/SocketContext';
 import './Auth.css';
 
 const COMMON_PASSWORDS = ['password', '12345678', 'qwerty123', 'password123', 'smartmeet123', 'abcdefgh', 'letmein123'];
 
 const Signup = () => {
     const navigate = useNavigate();
+    const { connectSocket } = useSocket();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -69,6 +71,7 @@ const Signup = () => {
             if (response.token) {
                 localStorage.setItem('token', response.token);
                 localStorage.setItem('user', JSON.stringify(response.user));
+                connectSocket();
                 navigate('/dashboard');
             }
         } catch (err) {

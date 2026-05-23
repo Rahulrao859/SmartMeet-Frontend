@@ -101,6 +101,12 @@ export const api = {
         const response = await apiClient.get('/stats');
         return response.data;
     },
+
+    // Get recent activity feed
+    getRecentActivity: async () => {
+        const response = await apiClient.get('/v1/activity');
+        return response.data;
+    },
 };
 
 // Error handler helper

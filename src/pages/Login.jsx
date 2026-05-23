@@ -4,10 +4,12 @@ import { FaEye, FaEyeSlash, FaRobot, FaCalendarAlt, FaEnvelope, FaChartLine, FaS
 import { MdEmail } from 'react-icons/md';
 import { FcGoogle } from 'react-icons/fc';
 import { api, handleApiError } from '../services/api';
+import { useSocket } from '../context/SocketContext';
 import './Auth.css';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { connectSocket } = useSocket();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -58,6 +60,7 @@ const Login = () => {
                 setSuccess(true);
                 localStorage.setItem('token', response.token);
                 localStorage.setItem('user', JSON.stringify(response.user));
+                connectSocket();
                 setTimeout(() => navigate('/dashboard'), 600);
             }
         } catch (err) {
