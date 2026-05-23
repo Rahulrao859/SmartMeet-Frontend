@@ -69,9 +69,10 @@ export const api = {
         const response = await apiClient.get('/auth/me');
         return response.data;
     },
-    // Health check
+    // Health check — uses root /health (not /api/health)
     healthCheck: async () => {
-        const response = await apiClient.get('/health');
+        const rootUrl = API_BASE_URL.replace('/api', '');
+        const response = await axios.get(`${rootUrl}/health`, { timeout: 8000 });
         return response.data;
     },
 
