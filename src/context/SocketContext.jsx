@@ -1,12 +1,12 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import React, { createContext, useContext, useState } from 'react';
 
 const SocketContext = createContext(null);
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
+// ── Lightweight notification context (replaces socket.io) ──────────────
+// Socket.io is not compatible with Vercel serverless. This context keeps
+// the toast notification API intact so all consumers continue to work
+// without any changes — just no real-time websocket push.
 export const SocketProvider = ({ children }) => {
-    const [socket, setSocket] = useState(null);
     const [toast, setToast] = useState(null);
 
     const showToast = (msg, type = 'info') => {
@@ -14,88 +14,11 @@ export const SocketProvider = ({ children }) => {
         setTimeout(() => setToast(null), 4000);
     };
 
-    const connectSocket = () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        // If already connected, do nothing
-        if (socket?.connected) return;
-
-        const newSocket = io(SOCKET_URL, {
-            auth: { token },
-            transports: ['websocket', 'polling']
-        });
-
-        newSocket.on('connect', () => {
-            console.log('[SOCKET] Connected to real-time server:', newSocket.id);
-        });
-
-        newSocket.on('connect_error', (err) => {
-            console.error('[SOCKET] Connection failed:', err.message);
-        });
-
-        // Real-time Event Listeners
-        newSocket.on('meeting:created', (data) => {
-            showToast(`📅 New meeting scheduled: "${data.meeting.title}"`, 'success');
-        });
-
-        newSocket.on('meeting:updated', (data) => {
-            showToast(`🔄 Meeting rescheduled: "${data.meeting.title}"`, 'info');
-        });
-
-        newSocket.on('meeting:cancelled', (data) => {
-            showToast(`❌ Meeting cancelled: "${data.meeting.title}"`, 'error');
-        });
-
-        newSocket.on('email:log', (data) => {
-            const { log } = data;
-            const isSent = log.status === 'Sent';
-            if (isSent) {
-                showToast(`📧 Email delivered to ${log.recipient}`, 'success');
-            } else {
-                showToast(`⚠️ Email delivery failed to ${log.recipient}`, 'error');
-            }
-        });
-
-        setSocket(newSocket);
-    };
-
-    const disconnectSocket = () => {
-        if (socket) {
-            socket.disconnect();
-            setSocket(null);
-            console.log('[SOCKET] Disconnected from server');
-        }
-    };
-
-    // Auto-connect socket if token is present on mount
-    useEffect(() => {
-        connectSocket();
-        return () => {
-            if (socket) socket.disconnect();
-        };
-    }, []);
-
-    // Listen for storage changes to sync token login/logout across tabs
-    useEffect(() => {
-        const handleAuthChange = () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                connectSocket();
-            } else {
-                disconnectSocket();
-            }
-        };
-
-        window.addEventListener('storage', handleAuthChange);
-        return () => window.removeEventListener('storage', handleAuthChange);
-    }, [socket]);
-
     return (
-        <SocketContext.Provider value={{ socket, connectSocket, disconnectSocket, showToast }}>
+        <SocketContext.Provider value={{ socket: null, showToast }}>
             {children}
-            
-            {/* Real-Time Toast Notification Banner */}
+
+            {/* Toast Notification Banner */}
             {toast && (
                 <div style={{
                     position: 'fixed',

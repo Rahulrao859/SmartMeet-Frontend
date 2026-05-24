@@ -3,19 +3,19 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdDashboard, MdCalendarToday, MdEmail, MdTimeline, MdSettings, MdLogout, MdMenu, MdClose, MdSchedule } from 'react-icons/md';
 import { FaRobot } from 'react-icons/fa';
 import ThemeToggle from './ThemeToggle';
-import { useSocket } from '../context/SocketContext';
+
 
 const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const { disconnectSocket } = useSocket();
+
 
     const handleLogout = () => {
         // Clear all authentication data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        disconnectSocket();
+
         // Redirect to landing page
         navigate('/');
     };

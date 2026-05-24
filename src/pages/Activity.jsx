@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { MdSchedule, MdEmail, MdCalendarToday, MdNotifications } from 'react-icons/md';
 import { api } from '../services/api';
-import { useSocket } from '../context/SocketContext';
+
 
 const Activity = () => {
-    const { socket } = useSocket();
+
     const [activeFilter, setActiveFilter] = useState('All');
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,29 +30,7 @@ const Activity = () => {
         fetchActivities();
     }, []);
 
-    // Listen to real-time events to auto-refresh the timeline
-    useEffect(() => {
-        if (!socket) return;
 
-        const handleRealTimeUpdate = () => {
-            console.log('[ACTIVITY FEED] Real-time change received, refreshing timeline…');
-            fetchActivities();
-        };
-
-        socket.on('meeting:created', handleRealTimeUpdate);
-        socket.on('meeting:updated', handleRealTimeUpdate);
-        socket.on('meeting:cancelled', handleRealTimeUpdate);
-        socket.on('meeting:deleted', handleRealTimeUpdate);
-        socket.on('email:log', handleRealTimeUpdate);
-
-        return () => {
-            socket.off('meeting:created', handleRealTimeUpdate);
-            socket.off('meeting:updated', handleRealTimeUpdate);
-            socket.off('meeting:cancelled', handleRealTimeUpdate);
-            socket.off('meeting:deleted', handleRealTimeUpdate);
-            socket.off('email:log', handleRealTimeUpdate);
-        };
-    }, [socket]);
 
     const filteredActivities = activities.filter(activity => {
         if (activeFilter === 'All') return true;

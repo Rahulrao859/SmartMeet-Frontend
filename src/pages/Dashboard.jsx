@@ -6,14 +6,14 @@ import QuickActions from '../components/QuickActions';
 import { MdCalendarToday, MdCheckCircle, MdEmail, MdAdd, MdNotifications, MdSchedule, MdChevronRight } from 'react-icons/md';
 import { FaUsers, FaCalendarAlt } from 'react-icons/fa';
 import { api } from '../services/api';
-import { useSocket } from '../context/SocketContext';
+
 
 // Configure base URL from environment
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const { socket } = useSocket();
+
     const [stats, setStats] = useState({
         meetings_scheduled: 0,
         emails_sent: 0,
@@ -100,31 +100,7 @@ const Dashboard = () => {
         }
     }, []);
 
-    // Listen to real-time events to auto-refresh statistics and activities
-    useEffect(() => {
-        if (!socket) return;
 
-        const handleRealTimeUpdate = () => {
-            console.log('[DASHBOARD] Real-time change received, refreshing feed…');
-            loadStats();
-            loadRecentActivity();
-            loadUpcomingMeetings();
-        };
-
-        socket.on('meeting:created', handleRealTimeUpdate);
-        socket.on('meeting:updated', handleRealTimeUpdate);
-        socket.on('meeting:cancelled', handleRealTimeUpdate);
-        socket.on('meeting:deleted', handleRealTimeUpdate);
-        socket.on('email:log', handleRealTimeUpdate);
-
-        return () => {
-            socket.off('meeting:created', handleRealTimeUpdate);
-            socket.off('meeting:updated', handleRealTimeUpdate);
-            socket.off('meeting:cancelled', handleRealTimeUpdate);
-            socket.off('meeting:deleted', handleRealTimeUpdate);
-            socket.off('email:log', handleRealTimeUpdate);
-        };
-    }, [socket]);
 
     // Beautiful time ago helper
     const formatTimeAgo = (dateStr) => {
